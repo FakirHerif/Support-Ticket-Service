@@ -3,12 +3,12 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 
-	"github.com/FakirHerif/Support-Ticket-Service/backend/internal/model"
+	"github.com/FakirHerif/Support-Ticket-Service/backend/database"
 )
 
 func main() {
 
-	model.Model()
+	database.ConnectDatabase()
 
 	r := gin.Default()
 

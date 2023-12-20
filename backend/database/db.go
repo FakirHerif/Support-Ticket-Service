@@ -8,8 +8,8 @@ import (
 
 var DB *sql.DB
 
-func ConnectDatabase() error {
-	db, err := sql.Open("sqlite", "./database.db")
+func ConnectDatabase(filePath string) error {
+	db, err := sql.Open("sqlite", filePath)
 	if err != nil {
 		return err
 	}

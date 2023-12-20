@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"database/sql"
+
 	"github.com/FakirHerif/Support-Ticket-Service/backend/database"
 	"github.com/FakirHerif/Support-Ticket-Service/backend/internal/model"
 )
@@ -37,4 +39,24 @@ func GetInformations() ([]model.Informations, error) {
 
 	return informationsList, nil
 
+}
+
+func GetInformationsByID(id string) (model.Informations, error) {
+	stmt, err := database.DB.Prepare("SELECT * FROM informationsList WHERE id = ?")
+
+	if err != nil {
+		return model.Informations{}, err
+	}
+
+	informations := model.Informations{}
+
+	sqlErr := stmt.QueryRow(id).Scan(&informations.Id, &informations.FirstName, &informations.LastName, &informations.Age, &informations.IdentificationNo, &informations.Address, &informations.Attachments, &informations.Title, &informations.Content, &informations.ReferenceID)
+
+	if sqlErr != nil {
+		if sqlErr == sql.ErrNoRows {
+			return model.Informations{}, nil
+		}
+		return model.Informations{}, sqlErr
+	}
+	return informations, nil
 }

@@ -48,7 +48,14 @@ func getInformations(c *gin.Context) {
 }
 
 func getInformationsByID(c *gin.Context) {
-	c.JSON(200, gin.H{"message": "SUCCESS: Information Was Received"})
+	id := c.Param("id")
+	informations, err := repository.GetInformationsByID(id)
+	if err != nil || informations.Id == 0 {
+		c.JSON(404, gin.H{"error": "No Record Found"})
+		return
+	} else {
+		c.JSON(200, gin.H{"data": informations})
+	}
 }
 
 func addInformations(c *gin.Context) {

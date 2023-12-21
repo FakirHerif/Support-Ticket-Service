@@ -122,3 +122,40 @@ func UpdateInformationsByID(byInformations model.Informations, id int) (bool, er
 
 	return true, nil
 }
+
+func DeleteInformationsByID(informationsId int) (bool, error) {
+	tx, err := database.DB.Begin()
+
+	if err != nil {
+		return false, err
+	}
+
+	var count int
+	err = database.DB.QueryRow("SELECT COUNT(*) FROM informationsList WHERE id = ?", informationsId).Scan(&count)
+	if err != nil {
+		return false, err
+	}
+
+	if count == 0 {
+		tx.Rollback()
+		return false, err
+	}
+
+	stmt, err := database.DB.Prepare("DELETE from informationsList WHERE id = ?")
+
+	if err != nil {
+		return false, err
+	}
+
+	defer stmt.Close()
+
+	_, err = stmt.Exec(informationsId)
+
+	if err != nil {
+		return false, err
+	}
+
+	tx.Commit()
+
+	return true, nil
+}

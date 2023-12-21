@@ -27,8 +27,8 @@ func main() {
 		v1.GET("response", getResponse)
 		v1.GET("response/:id", getResponseByID)
 		v1.POST("response", addResponse)
-		v1.PUT("response/:id")
-		v1.DELETE("response/:id")
+		v1.PUT("response/:id", updateResponseByID)
+		v1.DELETE("response/:id", deleteResponseByID)
 	}
 
 	filePath := "../../database/database.db"
@@ -186,4 +186,62 @@ func addResponse(c *gin.Context) {
 	if success {
 		c.JSON(200, gin.H{"message": "SUCCESS: Response Added"})
 	}
+}
+
+func updateResponseByID(c *gin.Context) {
+	var json model.Response
+
+	if err := c.ShouldBindJSON(&json); err != nil {
+		c.JSON(400, gin.H{"error": "Invalid JSON format"})
+		return
+	}
+
+	responseId, err := strconv.Atoi(c.Param("id"))
+
+	if err != nil {
+		c.JSON(400, gin.H{"error": "Invalid Response id"})
+	}
+
+	success, err := repository.UpdateResponseByID(json, responseId)
+
+	if err != nil {
+		c.JSON(404, gin.H{"error": err.Error()})
+		return
+	}
+
+	if !success {
+		c.JSON(404, gin.H{"error": fmt.Sprintf("Record with ID %d not found", responseId)})
+		return
+	}
+
+	c.JSON(200, gin.H{"message": "SUCCESS: Response Changed"})
+}
+
+func deleteResponseByID(c *gin.Context) {
+	var json model.Response
+
+	if err := c.ShouldBindJSON(&json); err != nil {
+		c.JSON(400, gin.H{"error": "Invalid JSON format"})
+		return
+	}
+
+	responseId, err := strconv.Atoi(c.Param("id"))
+
+	if err != nil {
+		c.JSON(400, gin.H{"error": "Invalid Response id"})
+	}
+
+	success, err := repository.DeleteResponseByID(responseId)
+
+	if err != nil {
+		c.JSON(404, gin.H{"error": err.Error()})
+		return
+	}
+
+	if !success {
+		c.JSON(404, gin.H{"error": fmt.Sprintf("Record with ID %d not found", responseId)})
+		return
+	}
+
+	c.JSON(200, gin.H{"message": "SUCCESS: Response Deleted"})
 }

@@ -87,3 +87,77 @@ func AddResponse(newResponse model.Response) (bool, error) {
 
 	return true, nil
 }
+
+func UpdateResponseByID(byResponse model.Response, id int) (bool, error) {
+	tx, err := database.DB.Begin()
+	if err != nil {
+		return false, err
+	}
+
+	var count int
+	err = database.DB.QueryRow("SELECT COUNT(*) FROM responseList WHERE id =?", id).Scan(&count)
+	if err != nil {
+		tx.Rollback()
+		return false, err
+	}
+
+	if count == 0 {
+		tx.Rollback()
+		return false, err
+	}
+
+	stmt, err := tx.Prepare("UPDATE responseList SET informationsId = ?, responseText = ? WHERE id = ?")
+
+	if err != nil {
+		return false, err
+	}
+
+	defer stmt.Close()
+
+	_, err = stmt.Exec(byResponse.InformationsId, byResponse.ResponseText, id)
+
+	if err != nil {
+		return false, err
+	}
+
+	tx.Commit()
+
+	return true, nil
+}
+
+func DeleteResponseByID(responseId int) (bool, error) {
+	tx, err := database.DB.Begin()
+
+	if err != nil {
+		return false, err
+	}
+
+	var count int
+	err = database.DB.QueryRow("SELECT COUNT(*) FROM responseList WHERE id = ?", responseId).Scan(&count)
+	if err != nil {
+		return false, err
+	}
+
+	if count == 0 {
+		tx.Rollback()
+		return false, err
+	}
+
+	stmt, err := database.DB.Prepare("DELETE from responseList WHERE id = ?")
+
+	if err != nil {
+		return false, err
+	}
+
+	defer stmt.Close()
+
+	_, err = stmt.Exec(responseId)
+
+	if err != nil {
+		return false, err
+	}
+
+	tx.Commit()
+
+	return true, nil
+}

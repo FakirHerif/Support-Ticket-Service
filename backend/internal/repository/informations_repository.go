@@ -107,7 +107,7 @@ func UpdateInformationsByID(byInformations model.Informations, id int) (bool, er
 		return false, err
 	}
 
-	stmt, err := tx.Prepare("UPDATE informationsList SET firstName = ?, lastName = ?, age = ?, identificationNo = ?, address = ?, city = ?, town = ?, phone = ?, attachments = ?, title = ?, content = ?, referenceID = ?, status = ?, createdDate = ? WHERE id = ?")
+	stmt, err := tx.Prepare("UPDATE informationsList SET firstName = ?, lastName = ?, age = ?, identificationNo = ?, address = ?, city = ?, town = ?, phone = ?, attachments = ?, title = ?, content = ?, status = ? WHERE id = ?")
 
 	if err != nil {
 		return false, err
@@ -115,7 +115,7 @@ func UpdateInformationsByID(byInformations model.Informations, id int) (bool, er
 
 	defer stmt.Close()
 
-	_, err = stmt.Exec(byInformations.FirstName, byInformations.LastName, byInformations.Age, byInformations.IdentificationNo, byInformations.Address, byInformations.City, byInformations.Town, byInformations.Phone, byInformations.Attachments, byInformations.Title, byInformations.Content, byInformations.ReferenceID, byInformations.Status, byInformations.CreatedDate, id)
+	_, err = stmt.Exec(byInformations.FirstName, byInformations.LastName, byInformations.Age, byInformations.IdentificationNo, byInformations.Address, byInformations.City, byInformations.Town, byInformations.Phone, byInformations.Attachments, byInformations.Title, byInformations.Content, byInformations.Status, id)
 
 	if err != nil {
 		return false, err

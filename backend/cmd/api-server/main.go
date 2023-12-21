@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"log"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 
@@ -81,6 +83,31 @@ func addInformations(c *gin.Context) {
 }
 
 func updateInformationsByID(c *gin.Context) {
+	var json model.Informations
+
+	if err := c.ShouldBindJSON(&json); err != nil {
+		c.JSON(400, gin.H{"error": "Invalid JSON format"})
+		return
+	}
+
+	informationsId, err := strconv.Atoi(c.Param("id"))
+
+	if err != nil {
+		c.JSON(400, gin.H{"error": "Invalid Information id"})
+	}
+
+	success, err := repository.UpdateInformationsByID(json, informationsId)
+
+	if err != nil {
+		c.JSON(404, gin.H{"error": err.Error()})
+		return
+	}
+
+	if !success {
+		c.JSON(404, gin.H{"error": fmt.Sprintf("Record with ID %d not found", informationsId)})
+		return
+	}
+
 	c.JSON(200, gin.H{"message": "SUCCESS: Informations Changed"})
 }
 

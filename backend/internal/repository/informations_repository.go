@@ -85,3 +85,40 @@ func AddInformations(newInformations model.Informations) (bool, error) {
 
 	return true, nil
 }
+
+func UpdateInformationsByID(byInformations model.Informations, id int) (bool, error) {
+	tx, err := database.DB.Begin()
+	if err != nil {
+		return false, err
+	}
+
+	var count int
+	err = database.DB.QueryRow("SELECT COUNT(*) FROM informationsList WHERE id =?", id).Scan(&count)
+	if err != nil {
+		tx.Rollback()
+		return false, err
+	}
+
+	if count == 0 {
+		tx.Rollback()
+		return false, err
+	}
+
+	stmt, err := tx.Prepare("UPDATE informationsList SET firstName = ?, lastName = ?, age = ?, identificationNo = ?, address = ?, attachments = ?, title = ?, content = ?, referenceID = ? WHERE id = ?")
+
+	if err != nil {
+		return false, err
+	}
+
+	defer stmt.Close()
+
+	_, err = stmt.Exec(byInformations.FirstName, byInformations.LastName, byInformations.Age, byInformations.IdentificationNo, byInformations.Address, byInformations.Attachments, byInformations.Title, byInformations.Content, byInformations.ReferenceID, id)
+
+	if err != nil {
+		return false, err
+	}
+
+	tx.Commit()
+
+	return true, nil
+}

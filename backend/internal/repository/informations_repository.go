@@ -21,7 +21,7 @@ func GetInformations() ([]model.Informations, error) {
 
 	for rows.Next() {
 		singleInformations := model.Informations{}
-		err = rows.Scan(&singleInformations.Id, &singleInformations.FirstName, &singleInformations.LastName, &singleInformations.Age, &singleInformations.IdentificationNo, &singleInformations.Address, &singleInformations.Attachments, &singleInformations.Title, &singleInformations.Content, &singleInformations.ReferenceID)
+		err = rows.Scan(&singleInformations.Id, &singleInformations.FirstName, &singleInformations.LastName, &singleInformations.Age, &singleInformations.IdentificationNo, &singleInformations.Address, &singleInformations.City, &singleInformations.Town, &singleInformations.Phone, &singleInformations.Attachments, &singleInformations.Title, &singleInformations.Content, &singleInformations.ReferenceID, &singleInformations.Status)
 
 		if err != nil {
 			return nil, err
@@ -50,7 +50,7 @@ func GetInformationsByID(id string) (model.Informations, error) {
 
 	informations := model.Informations{}
 
-	sqlErr := stmt.QueryRow(id).Scan(&informations.Id, &informations.FirstName, &informations.LastName, &informations.Age, &informations.IdentificationNo, &informations.Address, &informations.Attachments, &informations.Title, &informations.Content, &informations.ReferenceID)
+	sqlErr := stmt.QueryRow(id).Scan(&informations.Id, &informations.FirstName, &informations.LastName, &informations.Age, &informations.IdentificationNo, &informations.Address, &informations.City, &informations.Town, &informations.Phone, &informations.Attachments, &informations.Title, &informations.Content, &informations.ReferenceID, &informations.Status)
 
 	if sqlErr != nil {
 		if sqlErr == sql.ErrNoRows {
@@ -67,7 +67,9 @@ func AddInformations(newInformations model.Informations) (bool, error) {
 		return false, err
 	}
 
-	stmt, err := tx.Prepare("INSERT INTO informationsList (firstName, lastName, age, identificationNo, address, attachments, title, content, referenceID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")
+	newInformations.Status = "cevap bekliyor"
+
+	stmt, err := tx.Prepare("INSERT INTO informationsList (firstName, lastName, age, identificationNo, address, city, town, phone, attachments, title, content, referenceID, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ,?, ?)")
 
 	if err != nil {
 		return false, err
@@ -75,7 +77,7 @@ func AddInformations(newInformations model.Informations) (bool, error) {
 
 	defer stmt.Close()
 
-	_, err = stmt.Exec(newInformations.FirstName, newInformations.LastName, newInformations.Age, newInformations.IdentificationNo, newInformations.Address, newInformations.Attachments, newInformations.Title, newInformations.Content, newInformations.ReferenceID)
+	_, err = stmt.Exec(newInformations.FirstName, newInformations.LastName, newInformations.Age, newInformations.IdentificationNo, newInformations.Address, newInformations.City, newInformations.Town, newInformations.Phone, newInformations.Attachments, newInformations.Title, newInformations.Content, newInformations.ReferenceID, newInformations.Status)
 
 	if err != nil {
 		return false, err
@@ -104,7 +106,7 @@ func UpdateInformationsByID(byInformations model.Informations, id int) (bool, er
 		return false, err
 	}
 
-	stmt, err := tx.Prepare("UPDATE informationsList SET firstName = ?, lastName = ?, age = ?, identificationNo = ?, address = ?, attachments = ?, title = ?, content = ?, referenceID = ? WHERE id = ?")
+	stmt, err := tx.Prepare("UPDATE informationsList SET firstName = ?, lastName = ?, age = ?, identificationNo = ?, address = ?, city = ?, town = ?, phone = ?, attachments = ?, title = ?, content = ?, referenceID = ?, status = ? WHERE id = ?")
 
 	if err != nil {
 		return false, err
@@ -112,7 +114,7 @@ func UpdateInformationsByID(byInformations model.Informations, id int) (bool, er
 
 	defer stmt.Close()
 
-	_, err = stmt.Exec(byInformations.FirstName, byInformations.LastName, byInformations.Age, byInformations.IdentificationNo, byInformations.Address, byInformations.Attachments, byInformations.Title, byInformations.Content, byInformations.ReferenceID, id)
+	_, err = stmt.Exec(byInformations.FirstName, byInformations.LastName, byInformations.Age, byInformations.IdentificationNo, byInformations.Address, byInformations.City, byInformations.Town, byInformations.Phone, byInformations.Attachments, byInformations.Title, byInformations.Content, byInformations.ReferenceID, byInformations.Status, id)
 
 	if err != nil {
 		return false, err

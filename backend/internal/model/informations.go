@@ -7,8 +7,12 @@ type Informations struct {
 	Age              int    `json:"age"`
 	IdentificationNo int    `json:"identificationNo"`
 	Address          string `json:"address"`
+	City             string `json:"city"`
+	Town             string `json:"town"`
+	Phone            string `json:"phone"`
 	Attachments      []byte `json:"attachments"`
 	Title            string `json:"title"`
 	Content          string `json:"content"`
 	ReferenceID      string `json:"referenceID"`
+	Status           string `json:"status"`
 }

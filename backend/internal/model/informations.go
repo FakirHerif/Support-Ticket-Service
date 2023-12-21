@@ -15,4 +15,5 @@ type Informations struct {
 	Content          string `json:"content"`
 	ReferenceID      string `json:"referenceID"`
 	Status           string `json:"status"`
+	CreatedDate      string `json:"createdDate"`
 }

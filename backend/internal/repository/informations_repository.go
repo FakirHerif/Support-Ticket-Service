@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"time"
 
 	"github.com/FakirHerif/Support-Ticket-Service/backend/database"
 	"github.com/FakirHerif/Support-Ticket-Service/backend/internal/model"
@@ -21,7 +22,7 @@ func GetInformations() ([]model.Informations, error) {
 
 	for rows.Next() {
 		singleInformations := model.Informations{}
-		err = rows.Scan(&singleInformations.Id, &singleInformations.FirstName, &singleInformations.LastName, &singleInformations.Age, &singleInformations.IdentificationNo, &singleInformations.Address, &singleInformations.City, &singleInformations.Town, &singleInformations.Phone, &singleInformations.Attachments, &singleInformations.Title, &singleInformations.Content, &singleInformations.ReferenceID, &singleInformations.Status)
+		err = rows.Scan(&singleInformations.Id, &singleInformations.FirstName, &singleInformations.LastName, &singleInformations.Age, &singleInformations.IdentificationNo, &singleInformations.Address, &singleInformations.City, &singleInformations.Town, &singleInformations.Phone, &singleInformations.Attachments, &singleInformations.Title, &singleInformations.Content, &singleInformations.ReferenceID, &singleInformations.Status, &singleInformations.CreatedDate)
 
 		if err != nil {
 			return nil, err
@@ -38,7 +39,6 @@ func GetInformations() ([]model.Informations, error) {
 	}
 
 	return informationsList, nil
-
 }
 
 func GetInformationsByID(id string) (model.Informations, error) {
@@ -50,7 +50,7 @@ func GetInformationsByID(id string) (model.Informations, error) {
 
 	informations := model.Informations{}
 
-	sqlErr := stmt.QueryRow(id).Scan(&informations.Id, &informations.FirstName, &informations.LastName, &informations.Age, &informations.IdentificationNo, &informations.Address, &informations.City, &informations.Town, &informations.Phone, &informations.Attachments, &informations.Title, &informations.Content, &informations.ReferenceID, &informations.Status)
+	sqlErr := stmt.QueryRow(id).Scan(&informations.Id, &informations.FirstName, &informations.LastName, &informations.Age, &informations.IdentificationNo, &informations.Address, &informations.City, &informations.Town, &informations.Phone, &informations.Attachments, &informations.Title, &informations.Content, &informations.ReferenceID, &informations.Status, &informations.CreatedDate)
 
 	if sqlErr != nil {
 		if sqlErr == sql.ErrNoRows {
@@ -68,8 +68,9 @@ func AddInformations(newInformations model.Informations) (bool, error) {
 	}
 
 	newInformations.Status = "cevap bekliyor"
+	newInformations.CreatedDate = time.Now().Format("02.01.2006 15:04:05")
 
-	stmt, err := tx.Prepare("INSERT INTO informationsList (firstName, lastName, age, identificationNo, address, city, town, phone, attachments, title, content, referenceID, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ,?, ?)")
+	stmt, err := tx.Prepare("INSERT INTO informationsList (firstName, lastName, age, identificationNo, address, city, town, phone, attachments, title, content, referenceID, status, createdDate) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ,?, ?, ?)")
 
 	if err != nil {
 		return false, err
@@ -77,7 +78,7 @@ func AddInformations(newInformations model.Informations) (bool, error) {
 
 	defer stmt.Close()
 
-	_, err = stmt.Exec(newInformations.FirstName, newInformations.LastName, newInformations.Age, newInformations.IdentificationNo, newInformations.Address, newInformations.City, newInformations.Town, newInformations.Phone, newInformations.Attachments, newInformations.Title, newInformations.Content, newInformations.ReferenceID, newInformations.Status)
+	_, err = stmt.Exec(newInformations.FirstName, newInformations.LastName, newInformations.Age, newInformations.IdentificationNo, newInformations.Address, newInformations.City, newInformations.Town, newInformations.Phone, newInformations.Attachments, newInformations.Title, newInformations.Content, newInformations.ReferenceID, newInformations.Status, newInformations.CreatedDate)
 
 	if err != nil {
 		return false, err
@@ -106,7 +107,7 @@ func UpdateInformationsByID(byInformations model.Informations, id int) (bool, er
 		return false, err
 	}
 
-	stmt, err := tx.Prepare("UPDATE informationsList SET firstName = ?, lastName = ?, age = ?, identificationNo = ?, address = ?, city = ?, town = ?, phone = ?, attachments = ?, title = ?, content = ?, referenceID = ?, status = ? WHERE id = ?")
+	stmt, err := tx.Prepare("UPDATE informationsList SET firstName = ?, lastName = ?, age = ?, identificationNo = ?, address = ?, city = ?, town = ?, phone = ?, attachments = ?, title = ?, content = ?, referenceID = ?, status = ?, createdDate = ? WHERE id = ?")
 
 	if err != nil {
 		return false, err
@@ -114,7 +115,7 @@ func UpdateInformationsByID(byInformations model.Informations, id int) (bool, er
 
 	defer stmt.Close()
 
-	_, err = stmt.Exec(byInformations.FirstName, byInformations.LastName, byInformations.Age, byInformations.IdentificationNo, byInformations.Address, byInformations.City, byInformations.Town, byInformations.Phone, byInformations.Attachments, byInformations.Title, byInformations.Content, byInformations.ReferenceID, byInformations.Status, id)
+	_, err = stmt.Exec(byInformations.FirstName, byInformations.LastName, byInformations.Age, byInformations.IdentificationNo, byInformations.Address, byInformations.City, byInformations.Town, byInformations.Phone, byInformations.Attachments, byInformations.Title, byInformations.Content, byInformations.ReferenceID, byInformations.Status, byInformations.CreatedDate, id)
 
 	if err != nil {
 		return false, err

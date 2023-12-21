@@ -23,6 +23,12 @@ func main() {
 		v1.POST("informations", addInformations)
 		v1.PUT("informations/:id", updateInformationsByID)
 		v1.DELETE("informations/:id", deleteInformationsByID)
+
+		v1.GET("response", getResponse)
+		v1.GET("response/:id")
+		v1.POST("response")
+		v1.PUT("response/:id")
+		v1.DELETE("response/:id")
 	}
 
 	filePath := "../../database/database.db"
@@ -137,4 +143,16 @@ func deleteInformationsByID(c *gin.Context) {
 	}
 
 	c.JSON(200, gin.H{"message": "SUCCESS: Informations Deleted"})
+}
+
+func getResponse(c *gin.Context) {
+	responseList, err := repository.GetResponse()
+	checkErr(err)
+
+	if err != nil {
+		c.JSON(404, gin.H{"error": "No Records Found"})
+		return
+	} else {
+		c.JSON(200, gin.H{"data": responseList})
+	}
 }

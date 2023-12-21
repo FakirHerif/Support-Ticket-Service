@@ -60,3 +60,28 @@ func GetInformationsByID(id string) (model.Informations, error) {
 	}
 	return informations, nil
 }
+
+func AddInformations(newInformations model.Informations) (bool, error) {
+	tx, err := database.DB.Begin()
+	if err != nil {
+		return false, err
+	}
+
+	stmt, err := tx.Prepare("INSERT INTO informationsList (firstName, lastName, age, identificationNo, address, attachments, title, content, referenceID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")
+
+	if err != nil {
+		return false, err
+	}
+
+	defer stmt.Close()
+
+	_, err = stmt.Exec(newInformations.FirstName, newInformations.LastName, newInformations.Age, newInformations.IdentificationNo, newInformations.Address, newInformations.Attachments, newInformations.Title, newInformations.Content, newInformations.ReferenceID)
+
+	if err != nil {
+		return false, err
+	}
+
+	tx.Commit()
+
+	return true, nil
+}

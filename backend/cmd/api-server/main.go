@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/FakirHerif/Support-Ticket-Service/backend/database"
+	"github.com/FakirHerif/Support-Ticket-Service/backend/internal/model"
 	"github.com/FakirHerif/Support-Ticket-Service/backend/internal/repository"
 )
 
@@ -59,7 +60,24 @@ func getInformationsByID(c *gin.Context) {
 }
 
 func addInformations(c *gin.Context) {
-	c.JSON(200, gin.H{"message": "SUCCESS: Informations Added"})
+
+	var json model.Informations
+
+	if err := c.ShouldBindJSON(&json); err != nil {
+		c.JSON(400, gin.H{"error": "Invalid JSON format"})
+		return
+	}
+
+	success, err := repository.AddInformations(json)
+
+	if err != nil {
+		c.JSON(404, gin.H{"error": "Informations could not be added", "details": err.Error()})
+		return
+	}
+
+	if success {
+		c.JSON(200, gin.H{"message": "SUCCESS: Informations Added"})
+	}
 }
 
 func updateInformationsByID(c *gin.Context) {

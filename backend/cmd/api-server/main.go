@@ -25,8 +25,8 @@ func main() {
 		v1.DELETE("informations/:id", deleteInformationsByID)
 
 		v1.GET("response", getResponse)
-		v1.GET("response/:id")
-		v1.POST("response")
+		v1.GET("response/:id", getResponseByID)
+		v1.POST("response", addResponse)
 		v1.PUT("response/:id")
 		v1.DELETE("response/:id")
 	}
@@ -154,5 +154,36 @@ func getResponse(c *gin.Context) {
 		return
 	} else {
 		c.JSON(200, gin.H{"data": responseList})
+	}
+}
+
+func getResponseByID(c *gin.Context) {
+	id := c.Param("id")
+	response, err := repository.GetResponseByID(id)
+	if err != nil || response.Id == 0 {
+		c.JSON(404, gin.H{"error": fmt.Sprintf("Record with ID %s not found", id)})
+		return
+	}
+	c.JSON(200, gin.H{"data": response})
+}
+
+func addResponse(c *gin.Context) {
+
+	var json model.Response
+
+	if err := c.ShouldBindJSON(&json); err != nil {
+		c.JSON(400, gin.H{"error": "Invalid JSON format"})
+		return
+	}
+
+	success, err := repository.AddResponse(json)
+
+	if err != nil {
+		c.JSON(404, gin.H{"error": "Response could not be added", "details": err.Error()})
+		return
+	}
+
+	if success {
+		c.JSON(200, gin.H{"message": "SUCCESS: Response Added"})
 	}
 }

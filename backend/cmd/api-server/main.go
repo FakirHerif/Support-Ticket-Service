@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 
@@ -33,6 +34,8 @@ func main() {
 		v1.GET("user", getUsers)
 		v1.GET("user/:id", getUserByID)
 		v1.POST("user", addUser)
+		v1.PUT("user/:id", updateUserByID)
+		v1.DELETE("user/:id", deleteUserByID)
 	}
 
 	filePath := "../../database/database.db"
@@ -275,4 +278,63 @@ func addUser(c *gin.Context) {
 	}
 
 	c.JSON(200, gin.H{"message": "SUCCESS: User Added"})
+}
+
+func updateUserByID(c *gin.Context) {
+	var json model.User
+
+	if err := c.ShouldBindJSON(&json); err != nil {
+		c.JSON(400, gin.H{"error": "Invalid JSON format"})
+		return
+	}
+
+	userId, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(400, gin.H{"error": "Invalid User ID"})
+		return
+	}
+
+	updateErr := repository.UpdateUserByID(json, userId)
+	if updateErr != nil {
+		if strings.Contains(updateErr.Error(), "UNIQUE constraint failed: userList.username") {
+			c.JSON(400, gin.H{"error": "Username already in use"})
+			return
+		} else if strings.Contains(updateErr.Error(), "UNIQUE constraint failed: userList.email") {
+			c.JSON(400, gin.H{"error": "Email already in use"})
+			return
+		}
+		c.JSON(404, gin.H{"error": updateErr.Error()})
+		return
+	}
+
+	c.JSON(200, gin.H{"message": "SUCCESS: User Details Have Been Changed"})
+}
+
+func deleteUserByID(c *gin.Context) {
+	var json model.User
+
+	if err := c.ShouldBindJSON(&json); err != nil {
+		c.JSON(400, gin.H{"error": "Invalid JSON format"})
+		return
+	}
+
+	userId, err := strconv.Atoi(c.Param("id"))
+
+	if err != nil {
+		c.JSON(400, gin.H{"error": "Invalid User id"})
+	}
+
+	success, err := repository.DeleteUserByID(userId)
+
+	if err != nil {
+		c.JSON(404, gin.H{"error": err.Error()})
+		return
+	}
+
+	if !success {
+		c.JSON(404, gin.H{"error": fmt.Sprintf("User with ID %d not found", userId)})
+		return
+	}
+
+	c.JSON(200, gin.H{"message": "SUCCESS: User Deleted"})
 }

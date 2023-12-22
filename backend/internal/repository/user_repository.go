@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"fmt"
 
 	"github.com/FakirHerif/Support-Ticket-Service/backend/database"
 	"github.com/FakirHerif/Support-Ticket-Service/backend/internal/model"
@@ -69,4 +70,57 @@ func AddUser(newUser model.User) error {
 	}
 
 	return nil
+}
+
+func UpdateUserByID(byUser model.User, id int) error {
+	var count int
+	err := database.DB.QueryRow("SELECT COUNT(*) FROM userList WHERE id =?", id).Scan(&count)
+	if err != nil {
+		return err
+	}
+
+	if count == 0 {
+		return fmt.Errorf("user with ID %d not found", id)
+	}
+
+	_, err = database.DB.Exec("UPDATE userList SET username = ?, password = ?, email = ? WHERE id = ?", byUser.Username, byUser.Password, byUser.Email, id)
+
+	return err
+}
+
+func DeleteUserByID(userId int) (bool, error) {
+	tx, err := database.DB.Begin()
+
+	if err != nil {
+		return false, err
+	}
+
+	var count int
+	err = database.DB.QueryRow("SELECT COUNT(*) FROM userList WHERE id = ?", userId).Scan(&count)
+	if err != nil {
+		return false, err
+	}
+
+	if count == 0 {
+		tx.Rollback()
+		return false, err
+	}
+
+	stmt, err := database.DB.Prepare("DELETE from userList WHERE id = ?")
+
+	if err != nil {
+		return false, err
+	}
+
+	defer stmt.Close()
+
+	_, err = stmt.Exec(userId)
+
+	if err != nil {
+		return false, err
+	}
+
+	tx.Commit()
+
+	return true, nil
 }

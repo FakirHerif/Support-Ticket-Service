@@ -61,32 +61,17 @@ func GetInformationsByID(id string) (model.Informations, error) {
 	return informations, nil
 }
 
-func AddInformations(newInformations model.Informations) (bool, error) {
-	tx, err := database.DB.Begin()
-	if err != nil {
-		return false, err
-	}
-
+func AddInformations(newInformations model.Informations) error {
 	newInformations.Status = "cevap bekliyor"
 	newInformations.CreatedDate = time.Now().Format("02.01.2006 15:04:05")
 
-	stmt, err := tx.Prepare("INSERT INTO informationsList (firstName, lastName, age, identificationNo, address, city, town, phone, attachments, title, content, referenceID, status, createdDate) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ,?, ?, ?)")
+	_, err := database.DB.Exec("INSERT INTO informationsList (firstName, lastName, age, identificationNo, address, city, town, phone, attachments, title, content, referenceID, status, createdDate) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ,?, ?, ?)", newInformations.FirstName, newInformations.LastName, newInformations.Age, newInformations.IdentificationNo, newInformations.Address, newInformations.City, newInformations.Town, newInformations.Phone, newInformations.Attachments, newInformations.Title, newInformations.Content, newInformations.ReferenceID, newInformations.Status, newInformations.CreatedDate)
 
 	if err != nil {
-		return false, err
+		return err
 	}
 
-	defer stmt.Close()
-
-	_, err = stmt.Exec(newInformations.FirstName, newInformations.LastName, newInformations.Age, newInformations.IdentificationNo, newInformations.Address, newInformations.City, newInformations.Town, newInformations.Phone, newInformations.Attachments, newInformations.Title, newInformations.Content, newInformations.ReferenceID, newInformations.Status, newInformations.CreatedDate)
-
-	if err != nil {
-		return false, err
-	}
-
-	tx.Commit()
-
-	return true, nil
+	return nil
 }
 
 func UpdateInformationsByID(byInformations model.Informations, id int) (bool, error) {

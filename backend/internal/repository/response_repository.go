@@ -61,31 +61,16 @@ func GetResponseByID(id string) (model.Response, error) {
 	return response, nil
 }
 
-func AddResponse(newResponse model.Response) (bool, error) {
-	tx, err := database.DB.Begin()
-	if err != nil {
-		return false, err
-	}
-
+func AddResponse(newResponse model.Response) error {
 	newResponse.ReplyDate = time.Now().Format("02.01.2006 15:04:05")
 
-	stmt, err := tx.Prepare("INSERT INTO responseList (informationsId, responseText, replyDate) VALUES (?, ?, ?)")
+	_, err := database.DB.Exec("INSERT INTO responseList (informationsId, responseText, replyDate) VALUES (?, ?, ?)", newResponse.InformationsId, newResponse.ResponseText, newResponse.ReplyDate)
 
 	if err != nil {
-		return false, err
+		return err
 	}
 
-	defer stmt.Close()
-
-	_, err = stmt.Exec(newResponse.InformationsId, newResponse.ResponseText, newResponse.ReplyDate)
-
-	if err != nil {
-		return false, err
-	}
-
-	tx.Commit()
-
-	return true, nil
+	return nil
 }
 
 func UpdateResponseByID(byResponse model.Response, id int) (bool, error) {

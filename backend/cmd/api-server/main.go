@@ -71,7 +71,6 @@ func getInformationsByID(c *gin.Context) {
 }
 
 func addInformations(c *gin.Context) {
-
 	var json model.Informations
 
 	if err := c.ShouldBindJSON(&json); err != nil {
@@ -79,16 +78,12 @@ func addInformations(c *gin.Context) {
 		return
 	}
 
-	success, err := repository.AddInformations(json)
-
-	if err != nil {
+	if err := repository.AddInformations(json); err != nil {
 		c.JSON(404, gin.H{"error": "Informations could not be added", "details": err.Error()})
 		return
 	}
+	c.JSON(200, gin.H{"message": "SUCCESS: Informations Added"})
 
-	if success {
-		c.JSON(200, gin.H{"message": "SUCCESS: Informations Added"})
-	}
 }
 
 func updateInformationsByID(c *gin.Context) {
@@ -172,7 +167,6 @@ func getResponseByID(c *gin.Context) {
 }
 
 func addResponse(c *gin.Context) {
-
 	var json model.Response
 
 	if err := c.ShouldBindJSON(&json); err != nil {
@@ -180,16 +174,12 @@ func addResponse(c *gin.Context) {
 		return
 	}
 
-	success, err := repository.AddResponse(json)
-
-	if err != nil {
+	if err := repository.AddResponse(json); err != nil {
 		c.JSON(404, gin.H{"error": "Response could not be added", "details": err.Error()})
 		return
 	}
 
-	if success {
-		c.JSON(200, gin.H{"message": "SUCCESS: Response Added"})
-	}
+	c.JSON(200, gin.H{"message": "SUCCESS: Response Added"})
 }
 
 func updateResponseByID(c *gin.Context) {
@@ -285,5 +275,4 @@ func addUser(c *gin.Context) {
 	}
 
 	c.JSON(200, gin.H{"message": "SUCCESS: User Added"})
-
 }

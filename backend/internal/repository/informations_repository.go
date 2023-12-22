@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"fmt"
 	"time"
 
 	"github.com/FakirHerif/Support-Ticket-Service/backend/database"
@@ -74,41 +75,20 @@ func AddInformations(newInformations model.Informations) error {
 	return nil
 }
 
-func UpdateInformationsByID(byInformations model.Informations, id int) (bool, error) {
-	tx, err := database.DB.Begin()
-	if err != nil {
-		return false, err
-	}
-
+func UpdateInformationsByID(byInformations model.Informations, id int) error {
 	var count int
-	err = database.DB.QueryRow("SELECT COUNT(*) FROM informationsList WHERE id =?", id).Scan(&count)
+	err := database.DB.QueryRow("SELECT COUNT(*) FROM informationsList WHERE id = ?", id).Scan(&count)
 	if err != nil {
-		tx.Rollback()
-		return false, err
+		return err
 	}
 
 	if count == 0 {
-		tx.Rollback()
-		return false, err
+		return fmt.Errorf("record with ID %d not found", id)
 	}
 
-	stmt, err := tx.Prepare("UPDATE informationsList SET firstName = ?, lastName = ?, age = ?, identificationNo = ?, address = ?, city = ?, town = ?, phone = ?, attachments = ?, title = ?, content = ?, status = ? WHERE id = ?")
+	_, err = database.DB.Exec("UPDATE informationsList SET firstName = ?, lastName = ?, age = ?, identificationNo = ?, address = ?, city = ?, town = ?, phone = ?, attachments = ?, title = ?, content = ?, status = ?, referenceID = ? WHERE id = ?", byInformations.FirstName, byInformations.LastName, byInformations.Age, byInformations.IdentificationNo, byInformations.Address, byInformations.City, byInformations.Town, byInformations.Phone, byInformations.Attachments, byInformations.Title, byInformations.Content, byInformations.Status, byInformations.ReferenceID, id)
 
-	if err != nil {
-		return false, err
-	}
-
-	defer stmt.Close()
-
-	_, err = stmt.Exec(byInformations.FirstName, byInformations.LastName, byInformations.Age, byInformations.IdentificationNo, byInformations.Address, byInformations.City, byInformations.Town, byInformations.Phone, byInformations.Attachments, byInformations.Title, byInformations.Content, byInformations.Status, id)
-
-	if err != nil {
-		return false, err
-	}
-
-	tx.Commit()
-
-	return true, nil
+	return err
 }
 
 func DeleteInformationsByID(informationsId int) (bool, error) {

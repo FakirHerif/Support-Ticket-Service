@@ -98,20 +98,18 @@ func updateInformationsByID(c *gin.Context) {
 	}
 
 	informationsId, err := strconv.Atoi(c.Param("id"))
-
 	if err != nil {
 		c.JSON(400, gin.H{"error": "Invalid Information id"})
-	}
-
-	success, err := repository.UpdateInformationsByID(json, informationsId)
-
-	if err != nil {
-		c.JSON(404, gin.H{"error": err.Error()})
 		return
 	}
 
-	if !success {
-		c.JSON(404, gin.H{"error": fmt.Sprintf("Record with ID %d not found", informationsId)})
+	updateErr := repository.UpdateInformationsByID(json, informationsId)
+	if updateErr != nil {
+		if strings.Contains(updateErr.Error(), "UNIQUE constraint failed: informationsList.referenceID") {
+			c.JSON(400, gin.H{"error": "referenceID already in use"})
+			return
+		}
+		c.JSON(404, gin.H{"error": updateErr.Error()})
 		return
 	}
 

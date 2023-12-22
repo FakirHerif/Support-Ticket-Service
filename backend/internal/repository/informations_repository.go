@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/google/uuid"
+
 	"github.com/FakirHerif/Support-Ticket-Service/backend/database"
 	"github.com/FakirHerif/Support-Ticket-Service/backend/internal/model"
 )
@@ -63,6 +65,10 @@ func GetInformationsByID(id string) (model.Informations, error) {
 }
 
 func AddInformations(newInformations model.Informations) error {
+
+	referenceID := uuid.New().String()
+
+	newInformations.ReferenceID = referenceID
 	newInformations.Status = "cevap bekliyor"
 	newInformations.CreatedDate = time.Now().Format("02.01.2006 15:04:05")
 

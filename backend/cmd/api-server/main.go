@@ -31,6 +31,8 @@ func main() {
 		v1.DELETE("response/:id", deleteResponseByID)
 
 		v1.GET("user", getUsers)
+		v1.GET("user/:id", getUserByID)
+		v1.POST("user", addUser)
 	}
 
 	filePath := "../../database/database.db"
@@ -257,4 +259,31 @@ func getUsers(c *gin.Context) {
 	} else {
 		c.JSON(200, gin.H{"data": userList})
 	}
+}
+
+func getUserByID(c *gin.Context) {
+	id := c.Param("id")
+	users, err := repository.GetUserByID(id)
+	if err != nil || users.Id == 0 {
+		c.JSON(404, gin.H{"error": fmt.Sprintf("User with ID %s not found", id)})
+		return
+	}
+	c.JSON(200, gin.H{"data": users})
+}
+
+func addUser(c *gin.Context) {
+	var json model.User
+
+	if err := c.ShouldBindJSON(&json); err != nil {
+		c.JSON(400, gin.H{"error": "Invalid JSON format"})
+		return
+	}
+
+	if err := repository.AddUser(json); err != nil {
+		c.JSON(404, gin.H{"error": "User could not be added", "details": err.Error()})
+		return
+	}
+
+	c.JSON(200, gin.H{"message": "SUCCESS: User Added"})
+
 }

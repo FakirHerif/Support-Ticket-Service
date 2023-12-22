@@ -29,6 +29,8 @@ func main() {
 		v1.POST("response", addResponse)
 		v1.PUT("response/:id", updateResponseByID)
 		v1.DELETE("response/:id", deleteResponseByID)
+
+		v1.GET("user", getUsers)
 	}
 
 	filePath := "../../database/database.db"
@@ -244,4 +246,15 @@ func deleteResponseByID(c *gin.Context) {
 	}
 
 	c.JSON(200, gin.H{"message": "SUCCESS: Response Deleted"})
+}
+
+func getUsers(c *gin.Context) {
+	userList, err := repository.GetUsers()
+
+	if err != nil {
+		c.JSON(404, gin.H{"error": "No Records Found"})
+		return
+	} else {
+		c.JSON(200, gin.H{"data": userList})
+	}
 }

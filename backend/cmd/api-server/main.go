@@ -1,15 +1,11 @@
 package main
 
 import (
-	"fmt"
 	"log"
-	"strconv"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 
 	"github.com/FakirHerif/Support-Ticket-Service/backend/database"
-	"github.com/FakirHerif/Support-Ticket-Service/backend/internal/model"
 	"github.com/FakirHerif/Support-Ticket-Service/backend/internal/repository"
 )
 
@@ -20,22 +16,23 @@ func main() {
 	v1 := r.Group("/api")
 	{
 		v1.GET("informations", getInformations)
-		v1.GET("informations/:id", getInformationsByID)
-		v1.POST("informations", addInformations)
-		v1.PUT("informations/:id", updateInformationsByID)
-		v1.DELETE("informations/:id", deleteInformationsByID)
-
 		v1.GET("response", getResponse)
-		v1.GET("response/:id", getResponseByID)
-		v1.POST("response", addResponse)
-		v1.PUT("response/:id", updateResponseByID)
-		v1.DELETE("response/:id", deleteResponseByID)
+		/* 		v1.GET("informations/:id", getInformationsByID)
+		   		v1.POST("informations", addInformations)
+		   		v1.PUT("informations/:id", updateInformationsByID)
+		   		v1.DELETE("informations/:id", deleteInformationsByID)
 
-		v1.GET("user", getUsers)
-		v1.GET("user/:id", getUserByID)
-		v1.POST("user", addUser)
-		v1.PUT("user/:id", updateUserByID)
-		v1.DELETE("user/:id", deleteUserByID)
+		   		v1.GET("response", getResponse)
+		   		v1.GET("response/:id", getResponseByID)
+		   		v1.POST("response", addResponse)
+		   		v1.PUT("response/:id", updateResponseByID)
+		   		v1.DELETE("response/:id", deleteResponseByID)
+
+		   		v1.GET("user", getUsers)
+		   		v1.GET("user/:id", getUserByID)
+		   		v1.POST("user", addUser)
+		   		v1.PUT("user/:id", updateUserByID)
+		   		v1.DELETE("user/:id", deleteUserByID) */
 	}
 
 	filePath := "../../database/database.db"
@@ -63,7 +60,16 @@ func getInformations(c *gin.Context) {
 	}
 }
 
-func getInformationsByID(c *gin.Context) {
+func getResponse(c *gin.Context) {
+	responseList, err := repository.GetResponse()
+	if err != nil {
+		c.JSON(404, gin.H{"error": "No Records Found"})
+		return
+	}
+	c.JSON(200, gin.H{"data": responseList})
+}
+
+/* func getInformationsByID(c *gin.Context) {
 	id := c.Param("id")
 	informations, err := repository.GetInformationsByID(id)
 	if err != nil || informations.Id == 0 {
@@ -336,3 +342,4 @@ func deleteUserByID(c *gin.Context) {
 
 	c.JSON(200, gin.H{"message": "SUCCESS: User Deleted"})
 }
+*/

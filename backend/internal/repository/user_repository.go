@@ -1,6 +1,6 @@
 package repository
 
-import (
+/* import (
 	"database/sql"
 	"fmt"
 
@@ -123,4 +123,4 @@ func DeleteUserByID(userId int) (bool, error) {
 	tx.Commit()
 
 	return true, nil
-}
+} */

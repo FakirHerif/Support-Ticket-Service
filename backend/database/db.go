@@ -1,19 +1,19 @@
 package database
 
 import (
-	"database/sql"
-
-	_ "modernc.org/sqlite"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 )
 
-var DB *sql.DB
+var DB *gorm.DB
 
 func ConnectDatabase(filePath string) error {
-	db, err := sql.Open("sqlite", filePath)
+	db, err := gorm.Open(sqlite.Open(filePath), &gorm.Config{})
 	if err != nil {
 		return err
 	}
 
+	db = db.Debug()
 	DB = db
 	return nil
 }

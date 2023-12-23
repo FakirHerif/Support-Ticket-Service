@@ -1,47 +1,19 @@
 package repository
 
 import (
-	"database/sql"
-	"time"
-
 	"github.com/FakirHerif/Support-Ticket-Service/backend/database"
 	"github.com/FakirHerif/Support-Ticket-Service/backend/internal/model"
 )
 
 func GetResponse() ([]model.Response, error) {
-
-	rows, err := database.DB.Query("SELECT * FROM responseList")
-
-	if err != nil {
+	var responseList []model.Response
+	if err := database.DB.Find(&responseList).Error; err != nil {
 		return nil, err
 	}
-
-	defer rows.Close()
-
-	responseList := make([]model.Response, 0)
-
-	for rows.Next() {
-		singleResponse := model.Response{}
-		err = rows.Scan(&singleResponse.Id, &singleResponse.InformationsId, &singleResponse.ResponseText, &singleResponse.ReplyDate)
-
-		if err != nil {
-			return nil, err
-		}
-
-		responseList = append(responseList, singleResponse)
-
-	}
-
-	err = rows.Err()
-
-	if err != nil {
-		return nil, err
-	}
-
 	return responseList, nil
 }
 
-func GetResponseByID(id string) (model.Response, error) {
+/* func GetResponseByID(id string) (model.Response, error) {
 	stmt, err := database.DB.Prepare("SELECT * FROM responseList WHERE id = ?")
 
 	if err != nil {
@@ -146,3 +118,4 @@ func DeleteResponseByID(responseId int) (bool, error) {
 
 	return true, nil
 }
+*/

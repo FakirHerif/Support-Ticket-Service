@@ -1,50 +1,31 @@
 package repository
 
 import (
-	"database/sql"
-	"fmt"
-	"time"
-
-	"github.com/google/uuid"
-
 	"github.com/FakirHerif/Support-Ticket-Service/backend/database"
 	"github.com/FakirHerif/Support-Ticket-Service/backend/internal/model"
+
+	"gorm.io/gorm"
 )
 
 func GetInformations() ([]model.Informations, error) {
-
-	rows, err := database.DB.Query("SELECT * FROM informationsList")
-
-	if err != nil {
-		return nil, err
-	}
-
-	defer rows.Close()
-
-	informationsList := make([]model.Informations, 0)
-
-	for rows.Next() {
-		singleInformations := model.Informations{}
-		err = rows.Scan(&singleInformations.Id, &singleInformations.FirstName, &singleInformations.LastName, &singleInformations.Age, &singleInformations.IdentificationNo, &singleInformations.Address, &singleInformations.City, &singleInformations.Town, &singleInformations.Phone, &singleInformations.Attachments, &singleInformations.Title, &singleInformations.Content, &singleInformations.ReferenceID, &singleInformations.Status, &singleInformations.CreatedDate)
-
-		if err != nil {
-			return nil, err
-		}
-
-		informationsList = append(informationsList, singleInformations)
-
-	}
-
-	err = rows.Err()
-
-	if err != nil {
-		return nil, err
+	var informationsList []model.Informations
+	result := database.DB.Preload("Response").Find(&informationsList)
+	if result.Error != nil && result.Error != gorm.ErrRecordNotFound {
+		return nil, result.Error
 	}
 
 	return informationsList, nil
 }
 
-func GetInformationsByID(id string) (model.Informations, error) {
+/* func GetInformationsWithResponses(informationsID int) (model.Informations, error) {
+	var informations model.Informations
+	if err := database.DB.Preload("Response").First(&informations, informationsID).Error; err != nil {
+		return informations, err
+	}
+	return informations, nil
+} */
+
+/* func GetInformationsByID(id string) (model.Informations, error) {
 	stmt, err := database.DB.Prepare("SELECT * FROM informationsList WHERE id = ?")
 
 	if err != nil {
@@ -133,3 +114,4 @@ func DeleteInformationsByID(informationsId int) (bool, error) {
 
 	return true, nil
 }
+*/

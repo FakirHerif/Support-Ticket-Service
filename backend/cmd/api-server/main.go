@@ -2,10 +2,12 @@ package main
 
 import (
 	"log"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 
 	"github.com/FakirHerif/Support-Ticket-Service/backend/database"
+	"github.com/FakirHerif/Support-Ticket-Service/backend/internal/model"
 	"github.com/FakirHerif/Support-Ticket-Service/backend/internal/repository"
 )
 
@@ -16,23 +18,28 @@ func main() {
 	v1 := r.Group("/api")
 	{
 		v1.GET("informations", getInformations)
+		v1.GET("informations/:id", getInformationsByID)
+		v1.POST("informations", addInformations)
+		v1.PUT("informations/:id", updateInformationsByID)
+		v1.DELETE("informations/:id", deleteInformationsByID)
+
 		v1.GET("response", getResponse)
-		/* 		v1.GET("informations/:id", getInformationsByID)
-		   		v1.POST("informations", addInformations)
-		   		v1.PUT("informations/:id", updateInformationsByID)
-		   		v1.DELETE("informations/:id", deleteInformationsByID)
+		/*
 
-		   		v1.GET("response", getResponse)
-		   		v1.GET("response/:id", getResponseByID)
-		   		v1.POST("response", addResponse)
-		   		v1.PUT("response/:id", updateResponseByID)
-		   		v1.DELETE("response/:id", deleteResponseByID)
 
-		   		v1.GET("user", getUsers)
-		   		v1.GET("user/:id", getUserByID)
-		   		v1.POST("user", addUser)
-		   		v1.PUT("user/:id", updateUserByID)
-		   		v1.DELETE("user/:id", deleteUserByID) */
+
+
+			v1.GET("response", getResponse)
+			v1.GET("response/:id", getResponseByID)
+			v1.POST("response", addResponse)
+			v1.PUT("response/:id", updateResponseByID)
+			v1.DELETE("response/:id", deleteResponseByID)
+
+			v1.GET("user", getUsers)
+			v1.GET("user/:id", getUserByID)
+			v1.POST("user", addUser)
+			v1.PUT("user/:id", updateUserByID)
+			v1.DELETE("user/:id", deleteUserByID) */
 	}
 
 	filePath := "../../database/database.db"
@@ -69,11 +76,11 @@ func getResponse(c *gin.Context) {
 	c.JSON(200, gin.H{"data": responseList})
 }
 
-/* func getInformationsByID(c *gin.Context) {
+func getInformationsByID(c *gin.Context) {
 	id := c.Param("id")
 	informations, err := repository.GetInformationsByID(id)
-	if err != nil || informations.Id == 0 {
-		c.JSON(404, gin.H{"error": fmt.Sprintf("Record with ID %s not found", id)})
+	if err != nil {
+		c.JSON(404, gin.H{"error": err.Error()})
 		return
 	}
 	c.JSON(200, gin.H{"data": informations})
@@ -88,11 +95,10 @@ func addInformations(c *gin.Context) {
 	}
 
 	if err := repository.AddInformations(json); err != nil {
-		c.JSON(404, gin.H{"error": "Informations could not be added", "details": err.Error()})
+		c.JSON(500, gin.H{"error": "Failed to add information", "details": err.Error()})
 		return
 	}
 	c.JSON(200, gin.H{"message": "SUCCESS: Informations Added"})
-
 }
 
 func updateInformationsByID(c *gin.Context) {
@@ -103,18 +109,14 @@ func updateInformationsByID(c *gin.Context) {
 		return
 	}
 
-	informationsId, err := strconv.Atoi(c.Param("id"))
+	informationsID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		c.JSON(400, gin.H{"error": "Invalid Information id"})
+		c.JSON(400, gin.H{"error": "Invalid Information ID"})
 		return
 	}
 
-	updateErr := repository.UpdateInformationsByID(json, informationsId)
+	updateErr := repository.UpdateInformationsByID(json, informationsID)
 	if updateErr != nil {
-		if strings.Contains(updateErr.Error(), "UNIQUE constraint failed: informationsList.referenceID") {
-			c.JSON(400, gin.H{"error": "referenceID already in use"})
-			return
-		}
 		c.JSON(404, gin.H{"error": updateErr.Error()})
 		return
 	}
@@ -130,26 +132,22 @@ func deleteInformationsByID(c *gin.Context) {
 		return
 	}
 
-	informationsId, err := strconv.Atoi(c.Param("id"))
-
+	informationsID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		c.JSON(400, gin.H{"error": "Invalid Information id"})
-	}
-
-	success, err := repository.DeleteInformationsByID(informationsId)
-
-	if err != nil {
-		c.JSON(404, gin.H{"error": err.Error()})
+		c.JSON(400, gin.H{"error": "Invalid Information ID"})
 		return
 	}
 
-	if !success {
-		c.JSON(404, gin.H{"error": fmt.Sprintf("Record with ID %d not found", informationsId)})
+	deleteErr := repository.DeleteInformationsByID(informationsID)
+	if deleteErr != nil {
+		c.JSON(404, gin.H{"error": deleteErr.Error()})
 		return
 	}
 
 	c.JSON(200, gin.H{"message": "SUCCESS: Informations Deleted"})
 }
+
+/*
 
 func getResponse(c *gin.Context) {
 	responseList, err := repository.GetResponse()

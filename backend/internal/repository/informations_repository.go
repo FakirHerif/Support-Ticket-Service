@@ -40,7 +40,7 @@ func AddInformations(newInformations model.Informations) error {
 	newInformations.Status = "cevap bekliyor"
 	newInformations.CreatedDate = time.Now().Format("02.01.2006 15:04:05")
 
-	result := database.DB.Create(&newInformations)
+	result := database.DB.Omit("id").Create(&newInformations)
 	if result.Error != nil {
 		return result.Error
 	}

@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 
@@ -28,22 +29,13 @@ func main() {
 		v1.POST("response", addResponse)
 		v1.PUT("response/:id", updateResponseByID)
 		v1.DELETE("response/:id", deleteResponseByID)
-		/*
 
+		v1.GET("user", getUsers)
+		v1.GET("user/:id", getUserByID)
+		v1.POST("user", addUser)
+		v1.PUT("user/:id", updateUserByID)
+		v1.DELETE("user/:id", deleteUserByID)
 
-
-
-
-
-
-
-
-
-			v1.GET("user", getUsers)
-			v1.GET("user/:id", getUserByID)
-			v1.POST("user", addUser)
-			v1.PUT("user/:id", updateUserByID)
-			v1.DELETE("user/:id", deleteUserByID) */
 	}
 
 	filePath := "../../database/database.db"
@@ -129,7 +121,7 @@ func deleteInformationsByID(c *gin.Context) {
 
 	informationsID, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		c.JSON(400, gin.H{"error": "Invalid Information ID"})
+		c.JSON(400, gin.H{"Bad Request": "Invalid Information ID"})
 		return
 	}
 
@@ -216,9 +208,6 @@ func deleteResponseByID(c *gin.Context) {
 	c.JSON(200, gin.H{"message": "SUCCESS: Response Deleted"})
 }
 
-/*
-
-
 func getUsers(c *gin.Context) {
 	userList, err := repository.GetUsers()
 
@@ -234,7 +223,7 @@ func getUserByID(c *gin.Context) {
 	id := c.Param("id")
 	users, err := repository.GetUserByID(id)
 	if err != nil || users.Id == 0 {
-		c.JSON(404, gin.H{"error": fmt.Sprintf("User with ID %s not found", id)})
+		c.JSON(404, gin.H{"error": err.Error()})
 		return
 	}
 	c.JSON(200, gin.H{"data": users})
@@ -266,7 +255,7 @@ func updateUserByID(c *gin.Context) {
 
 	userId, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		c.JSON(400, gin.H{"error": "Invalid User ID"})
+		c.JSON(400, gin.H{"Bad Request": "Invalid User ID"})
 		return
 	}
 
@@ -287,31 +276,17 @@ func updateUserByID(c *gin.Context) {
 }
 
 func deleteUserByID(c *gin.Context) {
-	var json model.User
-
-	if err := c.ShouldBindJSON(&json); err != nil {
-		c.JSON(400, gin.H{"error": "Invalid JSON format"})
-		return
-	}
 
 	userId, err := strconv.Atoi(c.Param("id"))
-
 	if err != nil {
 		c.JSON(400, gin.H{"error": "Invalid User id"})
 	}
 
-	success, err := repository.DeleteUserByID(userId)
-
-	if err != nil {
-		c.JSON(404, gin.H{"error": err.Error()})
-		return
-	}
-
-	if !success {
-		c.JSON(404, gin.H{"error": fmt.Sprintf("User with ID %d not found", userId)})
+	deleteErr := repository.DeleteUserByID(userId)
+	if deleteErr != nil {
+		c.JSON(404, gin.H{"error": deleteErr.Error()})
 		return
 	}
 
 	c.JSON(200, gin.H{"message": "SUCCESS: User Deleted"})
 }
-*/

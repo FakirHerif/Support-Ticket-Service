@@ -11,7 +11,7 @@ import (
 
 func GetUsers() ([]model.User, error) {
 	var userList []model.User
-	if err := database.DB.Raw("SELECT id, username, email, '*****' AS password, role FROM userList").Scan(&userList).Error; err != nil {
+	if err := database.DB.Select("id, username, email, '*****' AS password, role").Find(&userList).Error; err != nil {
 		return nil, err
 	}
 

@@ -4,10 +4,13 @@ import (
 	"log"
 	"strconv"
 	"strings"
+	"time"
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 
 	"github.com/FakirHerif/Support-Ticket-Service/backend/database"
+	"github.com/FakirHerif/Support-Ticket-Service/backend/internal/auth"
 	"github.com/FakirHerif/Support-Ticket-Service/backend/internal/model"
 	"github.com/FakirHerif/Support-Ticket-Service/backend/internal/repository"
 )
@@ -35,6 +38,8 @@ func main() {
 		v1.POST("user", addUser)
 		v1.PUT("user/:id", updateUserByID)
 		v1.DELETE("user/:id", deleteUserByID)
+
+		v1.POST("login", login)
 
 	}
 
@@ -289,4 +294,47 @@ func deleteUserByID(c *gin.Context) {
 	}
 
 	c.JSON(200, gin.H{"message": "SUCCESS: User Deleted"})
+}
+
+func login(c *gin.Context) {
+	var creds auth.Credentials
+	jwtKey := auth.GetJWTKey()
+
+	if err := c.ShouldBindJSON(&creds); err != nil {
+		c.JSON(400, gin.H{"Bad Request": "Invalid Login Format"})
+		return
+	}
+
+	user, err := auth.GetUserByUsername(creds.Username, creds.Password)
+	if err != nil {
+		switch err.Error() {
+		case "user not found":
+			c.JSON(401, gin.H{"error": "User Not Found"})
+		case "wrong password":
+			c.JSON(401, gin.H{"error": "Wrong Password"})
+		default:
+			c.JSON(500, gin.H{"error": "Unknown Error"})
+		}
+		return
+	}
+
+	c.JSON(200, gin.H{"message": "Successful Login"})
+
+	expirationTime := time.Now().Add(10 * time.Hour)
+	claims := &auth.Claims{
+		Username: creds.Username,
+		Role:     user.Role,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: expirationTime.Unix(),
+		},
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	tokenString, err := token.SignedString(jwtKey)
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Token Could Not Be Created"})
+		return
+	}
+
+	c.JSON(200, gin.H{"token": tokenString})
 }

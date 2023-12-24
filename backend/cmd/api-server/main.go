@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 
 	"github.com/FakirHerif/Support-Ticket-Service/backend/database"
@@ -18,6 +19,13 @@ import (
 func main() {
 
 	r := gin.Default()
+
+	config := cors.DefaultConfig()
+	config.AllowOrigins = []string{"*"} // İZİN VERİLEN URL'LER (TÜMÜ)
+	config.AllowMethods = []string{"GET", "POST", "PUT", "DELETE"}
+	config.AllowHeaders = []string{"Authorization", "Content-Type"}
+
+	r.Use(cors.New(config))
 
 	v1 := r.Group("/api")
 	{

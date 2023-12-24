@@ -1,8 +1,13 @@
 package repository
 
 import (
+	"errors"
+	"fmt"
+	"time"
+
 	"github.com/FakirHerif/Support-Ticket-Service/backend/database"
 	"github.com/FakirHerif/Support-Ticket-Service/backend/internal/model"
+	"gorm.io/gorm"
 )
 
 func GetResponse() ([]model.Response, error) {
@@ -13,22 +18,14 @@ func GetResponse() ([]model.Response, error) {
 	return responseList, nil
 }
 
-/* func GetResponseByID(id string) (model.Response, error) {
-	stmt, err := database.DB.Prepare("SELECT * FROM responseList WHERE id = ?")
-
-	if err != nil {
-		return model.Response{}, err
-	}
-
-	response := model.Response{}
-
-	sqlErr := stmt.QueryRow(id).Scan(&response.Id, &response.InformationsId, &response.ResponseText, &response.ReplyDate)
-
-	if sqlErr != nil {
-		if sqlErr == sql.ErrNoRows {
-			return model.Response{}, nil
+func GetResponseByID(id string) (model.Response, error) {
+	var response model.Response
+	result := database.DB.Where("id = ?", id).First(&response)
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return model.Response{}, fmt.Errorf("record with ID %s not found", id)
 		}
-		return model.Response{}, sqlErr
+		return model.Response{}, result.Error
 	}
 	return response, nil
 }
@@ -36,86 +33,37 @@ func GetResponse() ([]model.Response, error) {
 func AddResponse(newResponse model.Response) error {
 	newResponse.ReplyDate = time.Now().Format("02.01.2006 15:04:05")
 
-	_, err := database.DB.Exec("INSERT INTO responseList (informationsId, responseText, replyDate) VALUES (?, ?, ?)", newResponse.InformationsId, newResponse.ResponseText, newResponse.ReplyDate)
+	result := database.DB.Omit("id").Create(&newResponse)
+	if result.Error != nil {
+		return result.Error
+	}
+	return nil
+}
 
-	if err != nil {
-		return err
+func UpdateResponseByID(byResponse model.Response, id int) error {
+	result := database.DB.Model(&model.Response{}).Where("id = ?", id).Select("informationsId", "responseText").Updates(byResponse)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	if result.RowsAffected == 0 {
+		return fmt.Errorf("record with ID %d not found", id)
 	}
 
 	return nil
 }
 
-func UpdateResponseByID(byResponse model.Response, id int) (bool, error) {
-	tx, err := database.DB.Begin()
-	if err != nil {
-		return false, err
+func DeleteResponseByID(responseId int) error {
+	var response model.Response
+	result := database.DB.Where("id = ?", responseId).First(&response)
+
+	if result.RowsAffected == 0 {
+		return fmt.Errorf("record with ID %d not found", responseId)
 	}
 
-	var count int
-	err = database.DB.QueryRow("SELECT COUNT(*) FROM responseList WHERE id =?", id).Scan(&count)
-	if err != nil {
-		tx.Rollback()
-		return false, err
+	if err := database.DB.Delete(&response).Error; err != nil {
+		return err
 	}
 
-	if count == 0 {
-		tx.Rollback()
-		return false, err
-	}
-
-	stmt, err := tx.Prepare("UPDATE responseList SET informationsId = ?, responseText = ? WHERE id = ?")
-
-	if err != nil {
-		return false, err
-	}
-
-	defer stmt.Close()
-
-	_, err = stmt.Exec(byResponse.InformationsId, byResponse.ResponseText, id)
-
-	if err != nil {
-		return false, err
-	}
-
-	tx.Commit()
-
-	return true, nil
+	return nil
 }
-
-func DeleteResponseByID(responseId int) (bool, error) {
-	tx, err := database.DB.Begin()
-
-	if err != nil {
-		return false, err
-	}
-
-	var count int
-	err = database.DB.QueryRow("SELECT COUNT(*) FROM responseList WHERE id = ?", responseId).Scan(&count)
-	if err != nil {
-		return false, err
-	}
-
-	if count == 0 {
-		tx.Rollback()
-		return false, err
-	}
-
-	stmt, err := database.DB.Prepare("DELETE from responseList WHERE id = ?")
-
-	if err != nil {
-		return false, err
-	}
-
-	defer stmt.Close()
-
-	_, err = stmt.Exec(responseId)
-
-	if err != nil {
-		return false, err
-	}
-
-	tx.Commit()
-
-	return true, nil
-}
-*/

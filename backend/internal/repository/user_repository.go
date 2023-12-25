@@ -31,6 +31,18 @@ func GetUserByID(id string) (model.User, error) {
 }
 
 func AddUser(newUser model.User) error {
+
+	var existingUser model.User
+
+	// Check if the username already exists
+	if err := database.DB.Where("username = ?", newUser.Username).First(&existingUser).Error; err == nil {
+		return errors.New("username is already taken")
+	}
+
+	// Check if the email already exists
+	if err := database.DB.Where("email = ?", newUser.Email).First(&existingUser).Error; err == nil {
+		return errors.New("email is already in use")
+	}
 	newUser.Role = "user"
 
 	result := database.DB.Omit("id").Create(&newUser)

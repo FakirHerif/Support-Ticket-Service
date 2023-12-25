@@ -3,6 +3,7 @@ import LoginUser from "./components/LoginUser";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import Register from "./components/Register";
 
 function App() {
 
@@ -14,6 +15,10 @@ function App() {
       {
         path: "/login",
         element: <LoginUser />
+      },
+      {
+        path: "/register",
+        element: <Register />
       }
     ]);
   

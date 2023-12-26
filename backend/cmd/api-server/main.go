@@ -326,8 +326,6 @@ func login(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, gin.H{"message": "Successful Login"})
-
 	expirationTime := time.Now().Add(10 * time.Hour)
 	claims := &auth.Claims{
 		Username: creds.Username,
@@ -344,5 +342,11 @@ func login(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, gin.H{"token": tokenString})
+	c.JSON(200, gin.H{
+		"message":  "Successful Login",
+		"username": user.Username,
+		"email":    user.Email,
+		"role":     user.Role,
+		"token":    tokenString,
+	})
 }

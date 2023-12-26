@@ -31,6 +31,7 @@ func main() {
 	{
 		v1.GET("informations", getInformations)
 		v1.GET("informations/:id", getInformationsByID)
+		v1.GET("informations/referenceID/:referenceID", getInformationsByReferenceID)
 		v1.POST("informations", addInformations)
 		v1.PUT("informations/:id", updateInformationsByID)
 		v1.DELETE("informations/:id", deleteInformationsByID)
@@ -79,6 +80,16 @@ func getInformations(c *gin.Context) {
 func getInformationsByID(c *gin.Context) {
 	id := c.Param("id")
 	informations, err := repository.GetInformationsByID(id)
+	if err != nil {
+		c.JSON(404, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(200, gin.H{"data": informations})
+}
+
+func getInformationsByReferenceID(c *gin.Context) {
+	referenceID := c.Param("referenceID")
+	informations, err := repository.GetInformationsByReferenceID(referenceID)
 	if err != nil {
 		c.JSON(404, gin.H{"error": err.Error()})
 		return

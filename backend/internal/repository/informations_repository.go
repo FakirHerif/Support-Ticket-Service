@@ -34,6 +34,18 @@ func GetInformationsByID(id string) (model.Informations, error) {
 	return informations, nil
 }
 
+func GetInformationsByReferenceID(referenceID string) (model.Informations, error) {
+	var informations model.Informations
+	result := database.DB.Preload("Response").Where("referenceID = ?", referenceID).Find(&informations)
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return model.Informations{}, fmt.Errorf("record with ID %s not found", referenceID)
+		}
+		return model.Informations{}, result.Error
+	}
+	return informations, nil
+}
+
 func AddInformations(newInformations model.Informations) (string, error) {
 	referenceID := uuid.New().String()
 	newInformations.ReferenceID = referenceID

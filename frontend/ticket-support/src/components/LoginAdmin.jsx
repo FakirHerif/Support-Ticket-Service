@@ -6,14 +6,10 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Home from './Home';
 import { useAuth } from './AuthContext';
-import { useNavigate } from 'react-router-dom';
 
-const LoginUser = () => {
-
-  const [isUser, setIsUser] = useState(false);
-  const { handleLogin } = useAuth();
-
-  const navigate = useNavigate(); 
+const LoginAdmin = () => {
+    const [isAdmin, setIsAdmin] = useState(false);
+    const { handleLogin } = useAuth();
 
     const schema = Yup.object().shape({
         username: Yup.string()
@@ -24,20 +20,19 @@ const LoginUser = () => {
           .min(4, "Password must be at least 4 characters"),
       });
 
-      const handleSubmit = async (values) => {
+    const handleSubmit = async (values) => {
         try {
           const response = await axios.post('http://localhost:8080/api/login', values);
-
+          
           const userRole = response.data.role;
 
-          if (userRole === 'user') {
-            setIsUser(true);
-            toast.success('Login Successful!', { autoClose: 3000 });
+          if (userRole === 'admin') {
+            setIsAdmin(true);
+            toast.success('Admin Login Successful!', { autoClose: 3000 });
             handleLogin(values.username, response.data.token); 
           } else {
-            setIsUser(false);
-            toast.error('Only users are allowed! If you are an admin, use the admin login panel!', { autoClose: 3000 });
-            navigate('/admin');
+            setIsAdmin(false);
+            toast.error('Only admin users are allowed!', { autoClose: 3000 });
           }
         } catch (error) {
           console.error('Login Failed:', error.response.data);
@@ -45,14 +40,13 @@ const LoginUser = () => {
         }
     };  
 
-    if (isUser) {
-        // If user, redirect to home
+    if (isAdmin) {
+        // If admin, redirect to admin panel or return necessary admin component
         return <Home />;
       }
 
   return (
-<>
-      {/* Wrapping form inside formik tag and passing our schema to validationSchema prop */}
+    <>
       <Formik
         validationSchema={schema}
         initialValues={{ username: "", password: "" }}
@@ -68,10 +62,8 @@ const LoginUser = () => {
         }) => (
           <div className="login">
             <div className="form">
-           {/* Passing handleSubmit parameter tohtml form onSubmit property */}
               <form noValidate onSubmit={handleSubmit}>
-                <span>Login</span>
-              {/* Our input html with passing formik parameters like handleChange, values, handleBlur to input properties */}
+                <span>Admin Login</span>
                 <input
                   type="username"
                   name="username"
@@ -82,11 +74,9 @@ const LoginUser = () => {
                   className="form-control inp_text"
                   id="username"
                 />
-                {/* If validation is not passed show errors */}
                 <p className="error">
                   {errors.username && touched.username && errors.username}
                 </p>
-                 {/* Our input html with passing formik parameters like handleChange, values, handleBlur to input properties */}
                 <input
                   type="password"
                   name="password"
@@ -96,11 +86,9 @@ const LoginUser = () => {
                   placeholder="Enter password"
                   className="form-control"
                 />
-                 {/* If validation is not passed show errors */}
                 <p className="error">
                   {errors.password && touched.password && errors.password}
                 </p>
-                {/* Click on submit button to submit the form */}
                 <button type="submit">Login</button>
               </form>
             </div>
@@ -109,6 +97,6 @@ const LoginUser = () => {
       </Formik>
     </>
   );
-}
+};
 
-export default LoginUser
+export default LoginAdmin

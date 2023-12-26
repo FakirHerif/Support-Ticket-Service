@@ -94,11 +94,13 @@ func addInformations(c *gin.Context) {
 		return
 	}
 
-	if err := repository.AddInformations(json); err != nil {
-		c.JSON(500, gin.H{"error": "Failed to add information", "details": err.Error()})
+	referenceID, addErr := repository.AddInformations(json)
+	if addErr != nil {
+		c.JSON(500, gin.H{"error": "Failed to add information", "details": addErr.Error()})
 		return
 	}
-	c.JSON(200, gin.H{"message": "SUCCESS: Informations Added"})
+
+	c.JSON(200, gin.H{"message": "SUCCESS: Informations Added", "referenceID": referenceID})
 }
 
 func updateInformationsByID(c *gin.Context) {

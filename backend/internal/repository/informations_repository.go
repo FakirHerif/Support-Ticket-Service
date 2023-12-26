@@ -34,7 +34,7 @@ func GetInformationsByID(id string) (model.Informations, error) {
 	return informations, nil
 }
 
-func AddInformations(newInformations model.Informations) error {
+func AddInformations(newInformations model.Informations) (string, error) {
 	referenceID := uuid.New().String()
 	newInformations.ReferenceID = referenceID
 	newInformations.Status = "cevap bekliyor"
@@ -47,9 +47,9 @@ func AddInformations(newInformations model.Informations) error {
 
 	result := database.DB.Omit("id").Create(&newInformations)
 	if result.Error != nil {
-		return result.Error
+		return "", result.Error
 	}
-	return nil
+	return referenceID, nil
 }
 
 func UpdateInformationsByID(byInformations model.Informations, id int) error {

@@ -40,6 +40,11 @@ func AddInformations(newInformations model.Informations) error {
 	newInformations.Status = "cevap bekliyor"
 	newInformations.CreatedDate = time.Now().Format("02.01.2006 15:04:05")
 
+	if newInformations.InformationsOwner != nil && *newInformations.InformationsOwner == "" {
+		var emptyString string
+		newInformations.InformationsOwner = &emptyString // InformationsOwner alanına boş string pointer'ı atanır (Gönderilen değer boşsa boş string yerine Null yapar)
+	}
+
 	result := database.DB.Omit("id").Create(&newInformations)
 	if result.Error != nil {
 		return result.Error

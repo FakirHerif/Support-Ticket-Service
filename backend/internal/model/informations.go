@@ -16,7 +16,7 @@ type Informations struct {
 	ReferenceID       string     `json:"referenceID" gorm:"column:referenceID"`
 	Status            string     `json:"status" gorm:"column:status"`
 	CreatedDate       string     `json:"createdDate" gorm:"column:createdDate"`
-	InformationsOwner string     `json:"informationsOwner" gorm:"column:informationsOwner"`
+	InformationsOwner *string    `json:"informationsOwner" gorm:"column:informationsOwner"`
 	Response          []Response `json:"response"  gorm:"foreignKey:InformationsId"`
 }
 

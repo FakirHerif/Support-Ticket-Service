@@ -33,7 +33,7 @@ const LoginUser = () => {
           if (userRole === 'user') {
             setIsUser(true);
             toast.success('Login Successful!', { autoClose: 3000 });
-            handleLogin(values.username, response.data.token); 
+            handleLogin(values.username, response.data.token, response.data.role); 
           } else {
             setIsUser(false);
             toast.error('Only users are allowed! If you are an admin, use the admin login panel!', { autoClose: 3000 });

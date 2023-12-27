@@ -9,6 +9,7 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
+  const [role, setRole] = useState(null);
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
@@ -20,21 +21,30 @@ export const AuthProvider = ({ children }) => {
     if (storedToken) {
       setToken(JSON.parse(storedToken));
     }
+
+    const storedRole = localStorage.getItem('role');
+    if (storedRole) {
+      setRole(storedRole);
+    }
   }, []);
 
-  const handleLogin = (userData, authToken) => {
-    setUser(userData);
+  const handleLogin = (username, authToken, userRole) => {
+    setUser(username);
     setToken(authToken);
-    localStorage.setItem('user', userData);
+    setRole(userRole)
+    localStorage.setItem('user', username);
     localStorage.setItem('token', JSON.stringify(authToken));
-    console.log(userData, authToken)
+    localStorage.setItem('role', JSON.stringify(userRole));
+    console.log(username, authToken, userRole)
   };
 
   const handleLogout = () => {
     setUser(null);
     setToken(null);
+    setRole(null);
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    localStorage.removeItem('role');
   };
 
   return (
@@ -42,6 +52,7 @@ export const AuthProvider = ({ children }) => {
       value={{
         user,
         token,
+        role,
         handleLogin,
         handleLogout,
       }}

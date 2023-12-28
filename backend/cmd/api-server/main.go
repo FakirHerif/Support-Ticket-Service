@@ -2,6 +2,8 @@ package main
 
 import (
 	"log"
+	"mime/multipart"
+	"net/http"
 	"strconv"
 	"strings"
 	"time"
@@ -9,6 +11,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 
 	"github.com/FakirHerif/Support-Ticket-Service/backend/database"
 	"github.com/FakirHerif/Support-Ticket-Service/backend/internal/auth"
@@ -98,20 +101,23 @@ func getInformationsByReferenceID(c *gin.Context) {
 }
 
 func addInformations(c *gin.Context) {
-	var json model.Informations
+	var formData struct {
+		JSONData model.Informations    `form:"jsonData" binding:"required"`
+		File     *multipart.FileHeader `form:"file"`
+	}
 
-	if err := c.ShouldBindJSON(&json); err != nil {
-		c.JSON(400, gin.H{"error": "Invalid JSON format"})
+	if err := c.ShouldBindWith(&formData, binding.FormMultipart); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid form data", "details": err.Error()})
 		return
 	}
 
-	referenceID, addErr := repository.AddInformations(json)
-	if addErr != nil {
-		c.JSON(500, gin.H{"error": "Failed to add information", "details": addErr.Error()})
+	referenceID, err := repository.AddInformations(formData)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save data to database", "details": err.Error()})
 		return
 	}
 
-	c.JSON(200, gin.H{"message": "SUCCESS: Informations Added", "referenceID": referenceID})
+	c.JSON(http.StatusOK, gin.H{"message": "SUCCESS: Information Added", "referenceID": referenceID})
 }
 
 func updateInformationsByID(c *gin.Context) {

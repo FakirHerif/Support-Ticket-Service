@@ -3,6 +3,8 @@ package repository
 import (
 	"errors"
 	"fmt"
+	"io"
+	"mime/multipart"
 	"time"
 
 	"github.com/FakirHerif/Support-Ticket-Service/backend/database"
@@ -46,26 +48,49 @@ func GetInformationsByReferenceID(referenceID string) (model.Informations, error
 	return informations, nil
 }
 
-func AddInformations(newInformations model.Informations) (string, error) {
-	referenceID := uuid.New().String()
-	newInformations.ReferenceID = referenceID
-	newInformations.Status = "cevap bekliyor"
-	newInformations.CreatedDate = time.Now().Format("02.01.2006 15:04:05")
+func AddInformations(formData struct {
+	JSONData model.Informations    `form:"jsonData" binding:"required"`
+	File     *multipart.FileHeader `form:"file"`
+}) (string, error) {
+	jsonData := formData.JSONData
 
-	if newInformations.InformationsOwner != nil && *newInformations.InformationsOwner == "" {
-		var emptyString string
-		newInformations.InformationsOwner = &emptyString // InformationsOwner alanına boş string pointer'ı atanır (Gönderilen değer boşsa boş string yerine Null yapar)
+	if formData.File != nil {
+		file, err := formData.File.Open()
+		if err != nil {
+			return "", err
+		}
+		defer file.Close()
+
+		// Dosyayı oku ve byte dizisine dönüştür
+		fileBytes, err := io.ReadAll(file)
+		if err != nil {
+			return "", err
+		}
+
+		// Dosyayı Informations yapısına ekle (Attachments alanına)
+		jsonData.Attachments = fileBytes
 	}
 
-	result := database.DB.Omit("id").Create(&newInformations)
+	referenceID := uuid.New().String()
+	jsonData.ReferenceID = referenceID
+	jsonData.Status = "cevap bekliyor"
+	jsonData.CreatedDate = time.Now().Format("02.01.2006 15:04:05")
+
+	if jsonData.InformationsOwner != nil && *jsonData.InformationsOwner == "" {
+		var emptyString string
+		jsonData.InformationsOwner = &emptyString
+	}
+
+	result := database.DB.Omit("id").Create(&jsonData)
 	if result.Error != nil {
 		return "", result.Error
 	}
+
 	return referenceID, nil
 }
 
 func UpdateInformationsByID(byInformations model.Informations, id int) error {
-	result := database.DB.Model(&model.Informations{}).Where("id = ?", id).Select("firstName", "lastName", "age", "identificationNo", "address", "city", "town", "phone", "attachments", "title", "content", "status").Updates(byInformations)
+	result := database.DB.Model(&model.Informations{}).Where("id = ?", id).Select("firstName", "lastName", "age", "identificationNo", "address", "city", "town", "phone", "title", "content", "status").Updates(byInformations)
 	if result.Error != nil {
 		return result.Error
 	}

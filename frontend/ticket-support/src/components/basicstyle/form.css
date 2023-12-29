@@ -1,0 +1,94 @@
+.sendform {
+    width: 660px;
+    padding: 5% 0 0;
+    margin: auto;
+    font-family: 'Comfortaa', cursive;
+  }
+  
+  .formsend {
+    position: relative;
+    z-index: 1;
+    background: #FFFFFF;
+    border-radius: 10px;
+    max-width: 660px;
+    margin: 0 auto 100px;
+    padding: 45px;
+    text-align: center;
+  }
+  
+  .formsend input, .formsend textarea {
+    outline: 0;
+    background: #E8F0FE;
+    width: 100%;
+    border: 0;
+    border-radius: 5px;
+    margin: 0 0 15px;
+    padding: 15px;
+    box-sizing: border-box;
+    font-size: 14px;
+    font-family: 'Comfortaa', cursive;
+  }
+  
+  .formsend input:focus, .formsend textarea:focus {
+    background: #f2f2f2;
+  }
+  
+  .formsend button {
+    font-family: 'Comfortaa', cursive;
+    text-transform: uppercase;
+    outline: 0;
+    background: #4b6cb7;
+    width: 100%;
+    border: 0;
+    border-radius: 5px;
+    padding: 15px;
+    color: #FFFFFF;
+    font-size: 14px;
+    -webkit-transition: all 0.3 ease;
+    transition: all 0.3 ease;
+    cursor: pointer;
+  }
+  
+  .formsend button:active {
+    background: #395591;
+  }
+  
+  .formsend span {
+    font-size: 40px;
+    color: #4b6cb7;
+    margin-bottom: 25px;
+    display: block;
+  }
+  
+  .formsend p.error {
+    margin: 0 0 10px 10px;
+    text-align: left;
+    font-size: 10px;
+    color: red;
+  }
+  
+  input[type="file"] {
+    padding: 20px;
+}
+
+  .grid-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .grid-containerTwo {
+    display: grid;
+    grid-template-columns: 2fr 1fr; 
+    gap: 10px; 
+  }
+
+  @media screen and (max-width: 768px) {
+    .sendform {
+      width: 360px;
+    }
+  
+    .formsend {
+      max-width: 360px;
+    }
+  }

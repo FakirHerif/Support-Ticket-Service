@@ -24,7 +24,7 @@ body {
 
 .form input {
   outline: 0;
-  background: #f2f2f2;
+  background: #E8F0FE;
   width: 100%;
   border: 0;
   border-radius: 5px;
@@ -36,7 +36,7 @@ body {
 }
 
 .form input:focus {
-  background: #dbdbdb;
+  background: #f2f2f2;
 }
 
 .form button {

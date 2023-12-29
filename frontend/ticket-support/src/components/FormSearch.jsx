@@ -1,57 +1,73 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from './AuthContext';
+import { Formik } from 'formik';
+import * as Yup from 'yup';
 
 const FormSearch = () => {
-
-    const [searchTerm, setSearchTerm] = useState('');
-    const [searchResult, setSearchResult] = useState(null);
+    const { axios } = useAuth();
 
     const navigate = useNavigate(); 
 
-    const handleSearch = async () => {
-        
+    const handleSearch = async (values) => {
+      const searchTerm = values.search;
+
         try {
-          const response = await axios.get('http://localhost:8080/api/informations');
+          const response = await axios.get('/informations');
           const information = response.data.data;
       
           let foundInformation = information.find(info => info.referenceID === searchTerm);
 
           if (foundInformation) {
-            setSearchResult(foundInformation);
-            console.log(foundInformation.referenceID)
             navigate(`/basvuru/${foundInformation.referenceID}`, { state: { searchResult: foundInformation } });
           } else {
-            setSearchResult('No matching record found');
-            console.log(foundInformation.referenceID)
             navigate(`/basvuru/${foundInformation.referenceID}`);
           }
         } catch (error) {
           console.error('Error occurred while searching:', error);
-          setSearchResult('Error occurred while searching. Please try again.');
           navigate(`/basvuru/${searchTerm}`);
         }
       };
 
+      const initialValues = {
+        search: '',
+      };
+
+      const validationSchema = Yup.object().shape({
+        search: Yup.string().required('Reference ID required'),
+      });
+
       return (
-        <div>
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Enter referenceID"
-          />
-          <button onClick={handleSearch}>Search</button>
-           <div>
-            {searchResult && (
-              <div>
-                <h3>Search Result:</h3>
-                <p>ID: {searchResult.id}</p>
-                <p>{searchResult.createdDate}</p>
-              </div>
-            )}
-          </div> 
-        </div>
+        <Formik
+          initialValues={initialValues}
+          validationSchema={validationSchema}
+          onSubmit={(values, { setSubmitting }) => {
+            handleSearch(values);
+            setSubmitting(false);
+          }}
+        >
+          {({ values, errors, touched, handleChange, handleBlur, handleSubmit }) => (
+          <form onSubmit={handleSubmit} className="sendform">
+            <div className="formsend" style={{ maxWidth: '415px' }}>
+              <span>Search</span>
+              <input
+              type="text"
+              id="search"
+              name="search"
+              onBlur={handleBlur}
+              value={values.search}
+              onChange={handleChange}
+              placeholder="🔍  Enter Your Reference ID"
+              className="form-control inp_text"
+              />
+              <p className="error">
+                {errors.search && touched.search && <div>{errors.search}</div>}
+              </p>
+              <button type="submit">Search</button>
+            </div>
+          </form>
+          )}
+        </Formik>
       );
     };
 

@@ -4,12 +4,14 @@ import * as Yup from "yup";
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import Home from './Home';
 import { useAuth } from './AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const LoginAdmin = () => {
     const [isAdmin, setIsAdmin] = useState(false);
     const { handleLogin } = useAuth();
+
+    const navigate = useNavigate()
 
     const schema = Yup.object().shape({
         username: Yup.string()
@@ -42,7 +44,7 @@ const LoginAdmin = () => {
 
     if (isAdmin) {
         // If admin, redirect to admin panel or return necessary admin component
-        return <Home />;
+         navigate('/admin/basvuru-listesi');
       }
 
   return (

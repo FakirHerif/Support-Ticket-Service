@@ -12,6 +12,11 @@ import { FormProvider } from './components/FormContext';
 import FormSuccess from "./components/FormSuccess";
 import FormSearch from "./components/FormSearch";
 import FormDetail from "./components/FormDetail";
+import AdminFormlist from "./components/AdminFormlist";
+import AdminFormDetail from "./components/AdminFormDetail";
+import PrivateRoute from './components/PrivateRoute';
+import NotFound from "./components/NotFound";
+
 
 function App() {
 
@@ -25,6 +30,7 @@ function App() {
           <ToastContainer />
 
           <Routes>
+            <Route path="*" element={<NotFound />} />
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<LoginUser />} />
             <Route path="/register" element={<Register />} />
@@ -33,6 +39,8 @@ function App() {
             <Route path="/basvuru-basarili" element={<FormSuccess />} />
             <Route path="/basvuru-sorgula" element={<FormSearch />} />
             <Route path="/basvuru/:referenceID" element={<FormDetail />} />
+            <Route path="/admin/basvuru-listesi" element={<PrivateRoute Component={AdminFormlist} />} />
+            <Route path="/admin/basvuru/:referenceID" element={<PrivateRoute Component={AdminFormDetail} />} />
           </Routes>
         </FormProvider>
       </AuthProvider>  

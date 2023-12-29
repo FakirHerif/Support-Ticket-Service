@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import axios from 'axios';
 
 const AuthContext = createContext();
 
@@ -7,54 +8,64 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
-  const [role, setRole] = useState(null);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      setUser(storedUser);
-    }
-
     const storedToken = localStorage.getItem('token');
     if (storedToken) {
       setToken(JSON.parse(storedToken));
     }
-
-    const storedRole = localStorage.getItem('role');
-    if (storedRole) {
-      setRole(storedRole);
-    }
   }, []);
 
   const handleLogin = (username, authToken, userRole) => {
-    setUser(username);
     setToken(authToken);
-    setRole(userRole)
-    localStorage.setItem('user', username);
     localStorage.setItem('token', JSON.stringify(authToken));
-    localStorage.setItem('role', JSON.stringify(userRole));
-    console.log(username, authToken, userRole)
   };
 
   const handleLogout = () => {
-    setUser(null);
     setToken(null);
-    setRole(null);
     localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    localStorage.removeItem('role');
   };
+
+  const instance = axios.create({
+    baseURL: 'http://localhost:8080/api',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  instance.interceptors.request.use(
+    (config) => {
+      const storedToken = localStorage.getItem('token');
+      if (storedToken) {
+        config.headers.Authorization = `Bearer ${storedToken}`;
+      }
+      return config;
+    },
+    (error) => {
+      return Promise.reject(error);
+    }
+  );
+
+const storedToken = localStorage.getItem('token');
+const decodedToken = storedToken ? JSON.parse(atob(storedToken.split('.')[1])) : null;
+const username = decodedToken ? decodedToken.username : null;
+const userRole = decodedToken ? decodedToken.role : null;
+
+
+console.log("TOKEN:", storedToken)
+console.log("userRole:", userRole)
+console.log("username:", username)
 
   return (
     <AuthContext.Provider
       value={{
-        user,
+        user: username,
         token,
-        role,
+        role: userRole,
         handleLogin,
         handleLogout,
+        axios: instance, // Axios instance'i context içine ekledim
       }}
     >
       {children}

@@ -4,7 +4,6 @@ import * as Yup from "yup";
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import Home from './Home';
 import { useAuth } from './AuthContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -47,7 +46,7 @@ const LoginUser = () => {
 
     if (isUser) {
         // If user, redirect to home
-        return <Home />;
+        navigate('/')
       }
 
   return (

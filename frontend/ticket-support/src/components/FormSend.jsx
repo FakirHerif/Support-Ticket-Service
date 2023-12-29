@@ -27,7 +27,7 @@ const FormSend = () => {
         phone: '',
         title: '',
         content: '',
-        attachments: [],
+        attachments: null,
       };
 
       const validationSchema = Yup.object().shape({
@@ -45,23 +45,63 @@ const FormSend = () => {
     
       const handleSubmit = async (values) => {
         try {
-            if (user) {
-              if (user === "" || user === null) {
-                values.informationsOwner = null;
-              } else {
-                values.informationsOwner = user;
-              }
-            }
+          if (user === "" || user === null) {
+            values.informationsOwner = null;
+          } else {
+            values.informationsOwner = user;
+          }
         
-            const response = await axios.post('http://localhost:8080/api/informations', JSON.stringify(values), {
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': 'Bearer YOUR_TOKEN_HERE',
-            },
-          });
+          let base64Data = null;
+
+          if (values.attachments && values.attachments.length > 0) {
+            const selectedFile = values.attachments[0];
+            const reader = new FileReader();
+    
+            const readPromise = new Promise((resolve, reject) => {
+              reader.onload = () => {
+                base64Data = reader.result.split(',')[1];
+                resolve();
+              };
+              reader.onerror = reject;
+            });
+    
+            reader.readAsDataURL(selectedFile);
+    
+            await readPromise;
+          }
+
+        const jsonData = {
+          firstName: values.firstName,
+          lastName: values.lastName,
+          age: values.age,
+          identificationNo: values.identificationNo,
+          address: values.address,
+          city: values.city,
+          town: values.town,
+          phone: values.phone,
+          title: values.title,
+          content: values.content,
+          informationsOwner: user,
+          attachments: base64Data, // Assign base64 data to attachments field
+        };
+
+            const formData = new FormData();
+            formData.append('jsonData', JSON.stringify(jsonData));
+
+                  
+            const response = await axios.post('http://localhost:8080/api/informations', formData, {
+              headers: {
+                'Content-Type': 'multipart/form-data',
+                Authorization: 'Bearer YOUR_TOKEN_HERE',
+              },
+            });
     
           console.log('Form submitted:', response.data);
           console.log('Form details:', values);
+
+console.log("***********************************");
+          console.log('Attachments:', values.attachments);
+console.log(user)
 
     
 
@@ -72,6 +112,7 @@ const FormSend = () => {
           updateFormValues(values);
           updateReferenceID(response.data.referenceID);
           navigate(`/basvuru-basarili/`);
+          
         } catch (error) {
           console.error('Form submission failed:', error);
           console.log('Form submitted:', error.values);
@@ -93,10 +134,11 @@ const FormSend = () => {
             handleChange,
             handleBlur,
             handleSubmit,
+            setFieldValue,
           }) => (
           <div className='login'>
             <div className='form'>
-            <form noValidate onSubmit={handleSubmit}>
+            <form noValidate onSubmit={handleSubmit} encType="multipart/form-data">
                 <span>Send Form</span>
             <input
               type="text"
@@ -246,6 +288,26 @@ const FormSend = () => {
             <p className="error">
                 {errors.content && touched.content && <div>{errors.content}</div>}
             </p>
+
+            
+            <input
+              type="file"
+              id="attachments"
+              name="attachments"
+              onChange={(event) => {
+                const selectedFile = event.target.files[0]; // Sadece ilk seçilen dosyayı al
+                if (event.target.files.length > 1) {
+                  event.target.value = null; // Birden fazla dosya seçildiyse input değerini sıfırla
+                  setFieldValue('attachments', null); // Attachments değerini null yap
+                } else {
+                  setFieldValue('attachments', selectedFile ? [selectedFile] : null); // Tek dosya seçildiyse attachments'e ekle, aksi halde null yap
+                }
+              }}
+              multiple
+              className="form-control inp_file"
+            />
+
+
            
           <button type="submit">Submit</button>
         </form>

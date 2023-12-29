@@ -77,7 +77,7 @@ const LoginUser = () => {
                   onChange={handleChange}
                   onBlur={handleBlur}
                   value={values.username}
-                  placeholder="Enter username"
+                  placeholder="🔒 Enter username"
                   className="form-control inp_text"
                   id="username"
                 />
@@ -92,7 +92,7 @@ const LoginUser = () => {
                   onChange={handleChange}
                   onBlur={handleBlur}
                   value={values.password}
-                  placeholder="Enter password"
+                  placeholder="🔑 Enter password"
                   className="form-control"
                 />
                  {/* If validation is not passed show errors */}

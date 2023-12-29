@@ -1,22 +1,38 @@
 import React from 'react'
 import { useFormContext } from './FormContext';
+import '../components/basicstyle/form.css';
+import Confetti from './Confetti';
+import { useNavigate } from 'react-router-dom';
 
 const FormSuccess = () => {
 
   const { formValues, referenceID } = useFormContext();
+  const navigate = useNavigate()
 
     return (
         <div>
           {formValues && (
             <>
-            <h1>BAŞVURUNUZ İÇİN TEŞEKKÜRLER.</h1>
-              <p>Firstname: {formValues.firstName}</p>
-              <p>Lastname: {formValues.lastName}</p>
-              <p>referenceID: {referenceID}</p>
-              <h2>Başvuru sonucunuzu takip etmek için referans numaranızı kaydetmeyi unutmayın.</h2>
-              <h3>referans numaranız ile sonucu sorgulayabilirsiniz.</h3>
-
-              <h2>BAŞVURUNUZUN DURUMUNU SORGULAMAK İÇİN TIKLAYINIZ.</h2>
+            <Confetti /> 
+            <div className="sendform">
+              <div className="formsend">
+                <h1>Dear, <span>{formValues.firstName} {formValues.lastName}</span></h1>
+                <hr />
+                <h4>Thank you for your application &#x1F389;</h4>
+                <br />
+                <p>We've received your form. We'll respond as soon as possible. Please make sure to <u>save your reference number</u> to track the progress of your application.</p>
+                <hr />
+                <h4 style={{fontWeight: "bold"}}>Your Reference ID :</h4>
+                <h5>{referenceID}</h5> 
+                <hr />
+                <h5>Click
+                <p style={{ cursor: 'pointer', fontWeight: 'bold', fontSize: '20px', color: 'red', display: 'inline', whiteSpace: 'nowrap'}} onClick={() => navigate(`/basvuru/${referenceID}`)}>
+                <u> here </u>
+                </p> 
+                to check the status of your application
+                </h5>
+              </div>
+            </div>
             </>
           )}
         </div>

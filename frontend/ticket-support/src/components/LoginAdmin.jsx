@@ -72,7 +72,7 @@ const LoginAdmin = () => {
                   onChange={handleChange}
                   onBlur={handleBlur}
                   value={values.username}
-                  placeholder="Enter username"
+                  placeholder="🔒 Enter username"
                   className="form-control inp_text"
                   id="username"
                 />
@@ -85,7 +85,7 @@ const LoginAdmin = () => {
                   onChange={handleChange}
                   onBlur={handleBlur}
                   value={values.password}
-                  placeholder="Enter password"
+                  placeholder="🔑 Enter password"
                   className="form-control"
                 />
                 <p className="error">

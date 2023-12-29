@@ -131,7 +131,7 @@ const FormSend = () => {
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.firstName}
-                    placeholder="Enter Firstname"
+                    placeholder="💬 Enter Firstname"
                     className="form-control inp_text"
                     />
                     <p className="error">{errors.firstName && touched.firstName && <div>{errors.firstName}</div>}</p>
@@ -144,7 +144,7 @@ const FormSend = () => {
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.lastName}
-                    placeholder="Enter Lastname"
+                    placeholder="💬 Enter Lastname"
                     className="form-control inp_text"
                     />
                     <p className="error">{errors.lastName && touched.lastName && <div>{errors.lastName}</div>}</p>
@@ -160,7 +160,7 @@ const FormSend = () => {
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.identificationNo}
-                    placeholder="Enter Identity No"
+                    placeholder="📝 Enter Identity No"
                     className="form-control inp_number"
                     />
                     <p className="error">{errors.identificationNo && touched.identificationNo && <div>{errors.identificationNo}</div>}</p>
@@ -173,7 +173,7 @@ const FormSend = () => {
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.age}
-                    placeholder="Enter Age"
+                    placeholder="📆 Enter Age"
                     className="form-control inp_number"
                     />
                     <p className="error">{errors.age && touched.age && <div>{errors.age}</div>}</p>
@@ -187,7 +187,7 @@ const FormSend = () => {
                 onChange={handleChange}
                 onBlur={handleBlur}
                 value={values.address}
-                placeholder="Enter Address"
+                placeholder="💒 Enter Address"
                 className="form-control inp_text"
                 />
                 <p className="error">{errors.address && touched.address && <div>{errors.address}</div>}</p>
@@ -201,7 +201,7 @@ const FormSend = () => {
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.city}
-                      placeholder="Enter City"
+                      placeholder="🏴 Enter City"
                       className="form-control inp_text"
                     />
                     <p className="error">{errors.city && touched.city && <div>{errors.city}</div>}</p>
@@ -214,7 +214,7 @@ const FormSend = () => {
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.town}
-                    placeholder="Enter Town"
+                    placeholder="🏲 Enter Town"
                     className="form-control inp_text"
                     />
                     <p className="error">{errors.town && touched.town && <div>{errors.town}</div>}</p>
@@ -228,7 +228,7 @@ const FormSend = () => {
                 onChange={handleChange}
                 onBlur={handleBlur}
                 value={values.phone}
-                placeholder="Enter Phone Number"
+                placeholder="📞 Enter Phone Number"
                 className="form-control inp_text"
                 />
                 <p className="error">{errors.phone && touched.phone && <div>{errors.phone}</div>}</p>
@@ -240,7 +240,7 @@ const FormSend = () => {
                 onChange={handleChange}
                 onBlur={handleBlur}
                 value={values.title}
-                placeholder="Enter Form Title"
+                placeholder="📌 Enter Form Title"
                 className="form-control inp_text"
                 />
                 <p className="error">{errors.title && touched.title && <div>{errors.title}</div>}</p>
@@ -252,7 +252,7 @@ const FormSend = () => {
                 onChange={handleChange}
                 onBlur={handleBlur}
                 value={values.content}
-                placeholder="Enter Form Content"
+                placeholder="💭 Enter Form Content"
                 className="form-control inp_text"
                 ></textarea>
                 <p className="error">{errors.content && touched.content && <div>{errors.content}</div>}</p>

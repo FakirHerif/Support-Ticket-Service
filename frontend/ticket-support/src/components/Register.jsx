@@ -56,7 +56,7 @@ const Register = () => {
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.username}
-                      placeholder="Enter username"
+                      placeholder="🔒 Enter username"
                       className="form-control inp_text"
                     />
                     <p className="error">
@@ -68,7 +68,7 @@ const Register = () => {
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.email}
-                      placeholder="Enter email"
+                      placeholder="💌 Enter email"
                       className="form-control"
                     />
                     <p className="error">
@@ -80,7 +80,7 @@ const Register = () => {
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.password}
-                      placeholder="Enter password"
+                      placeholder="🔑 Enter password"
                       className="form-control"
                     />
                     <p className="error">
@@ -92,7 +92,7 @@ const Register = () => {
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.confirmPassword}
-                      placeholder="Confirm password"
+                      placeholder="🔑 Confirm password"
                       className="form-control"
                     />
                     <p className="error">

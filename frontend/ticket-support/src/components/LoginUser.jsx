@@ -107,7 +107,7 @@ const LoginUser = () => {
                   {errors.password && touched.password && errors.password}
                 </p>
                 {/* Click on submit button to submit the form */}
-                <button type="submit">Login</button>
+                <button type="submit" className='btn btn-primary'>Login</button>
               </form>
             </div>
           </div>

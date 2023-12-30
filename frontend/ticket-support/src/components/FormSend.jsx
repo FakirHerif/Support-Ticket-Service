@@ -274,7 +274,7 @@ const FormSend = () => {
                 className="form-control inp_file"
                 />
                 
-                <button type="submit">Submit</button>
+                <button type="submit" className='btn btn-primary'>Submit</button>
               </form>
             </div>
           </div>

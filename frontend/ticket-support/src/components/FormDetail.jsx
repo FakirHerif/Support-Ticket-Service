@@ -281,7 +281,7 @@ const FormDetail = () => {
                           type="text"
                           id="firstName"
                           name="firstName"
-                          value={infoDetails.firstName}
+                          value={infoDetails.firstName ? `${infoDetails.firstName.substring(0, 3)}*****` : ''} 
                           className="form-control inp_text"
                           disabled 
                           />
@@ -294,42 +294,13 @@ const FormDetail = () => {
                           type="text"
                           id="lastName"
                           name="lastName"
-                          value={infoDetails.lastName} 
+                          value={infoDetails.lastName ? `${infoDetails.lastName.substring(0, 1)}*****` : ''} 
                           className="form-control inp_text"
                           disabled 
                           />
                         </div>
                       </div>
-        
-                      <div className="grid-containerTwo">
-                        <div className="grid-item-identification">
-                          <div className='statement'>
-                            📝 Identification No
-                          </div>
-                          <input
-                          type="number"
-                          id="identificationNo"
-                          name="identificationNo"
-                          value={infoDetails.identificationNo} 
-                          className="form-control inp_number"
-                          disabled 
-                          />
-                        </div>
-                        <div className="grid-item-age">
-                          <div className='statement'>
-                            📆 Age
-                          </div>
-                          <input
-                          type="number"
-                          id="age"
-                          name="age"
-                          value={infoDetails.age} 
-                          className="form-control inp_number"
-                          disabled 
-                          />
-                        </div>
-                      </div>
-                              
+              
                           <div className='statement'>
                             💒 Address
                           </div>
@@ -337,7 +308,7 @@ const FormDetail = () => {
                           type="text"
                           id="address"
                           name="address"
-                          value={infoDetails.address} 
+                          value={infoDetails.address ? `${infoDetails.address.substring(0, 4)}******` : ''}  
                           className="form-control inp_text"
                           disabled
                           />
@@ -364,7 +335,7 @@ const FormDetail = () => {
                           type="text"
                           id="town"
                           name="town"
-                          value={infoDetails.town} 
+                          value={infoDetails.town ? `${infoDetails.town.substring(0, 2)}******` : ''}
                           className="form-control inp_text"
                           disabled
                           />
@@ -378,7 +349,7 @@ const FormDetail = () => {
                         type="text"
                         id="phone"
                         name="phone"
-                        value={infoDetails.phone} 
+                        value={infoDetails.phone ? `${infoDetails.phone.substring(0, 3)}*****` : ''} 
                         className="form-control inp_text"
                         disabled
                       />

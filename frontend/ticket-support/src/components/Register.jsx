@@ -112,7 +112,7 @@ const Register = () => {
                         touched.confirmPassword &&
                         errors.confirmPassword}
                     </p>
-                    <button type="submit">Register</button>
+                    <button type="submit" className='btn btn-primary'>Register</button>
                   </form>
                 </div>
               </div>

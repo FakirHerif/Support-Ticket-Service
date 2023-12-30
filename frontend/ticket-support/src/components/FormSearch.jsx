@@ -63,7 +63,7 @@ const FormSearch = () => {
               <p className="error">
                 {errors.search && touched.search && <div>{errors.search}</div>}
               </p>
-              <button type="submit">Search</button>
+              <button type="submit" className='btn btn-primary'>Search</button>
             </div>
           </form>
           )}

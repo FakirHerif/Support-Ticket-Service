@@ -65,7 +65,8 @@ const LoginAdmin = () => {
           <div className="login">
             <div className="form">
               <form noValidate onSubmit={handleSubmit}>
-                <span>Admin Login</span>
+                <span style={{color:'red'}}>Admin Login</span>
+                <hr />
                 <input
                   type="username"
                   name="username"
@@ -91,6 +92,7 @@ const LoginAdmin = () => {
                 <p className="error">
                   {errors.password && touched.password && errors.password}
                 </p>
+                <hr />
                 <button type="submit">Login</button>
               </form>
             </div>

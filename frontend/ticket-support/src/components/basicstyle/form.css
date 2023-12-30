@@ -92,17 +92,6 @@
     font-size: 13px;
   }
 
-  @media screen and (max-width: 768px) {
-    .sendform {
-      width: 360px;
-      margin: auto;
-    }
-  
-    .formsend {
-      max-width: 360px;
-    }
-  }
-
 .confetti-container {
   position: fixed;
   top: 0;
@@ -131,6 +120,13 @@
   }
 }
 
+.notFoundForm {
+  width: 660px;
+  padding: 5% 0 0;
+  margin: auto;
+  font-family: 'Comfortaa', cursive;
+}
+
 .notFoundError {
   border-radius: 10px;
   width: 660px;
@@ -139,9 +135,27 @@
   padding: 6px;
 }
 
+
 @media screen and (max-width: 768px) {
+  .sendform {
+    width: 360px;
+    margin: auto;
+  }
+
+  .formsend {
+    max-width: 360px;
+  }
+
   .notFoundError {
     width: 360px;
+    margin: auto;
+  }
+
+  .notFoundForm{
     max-width: 360px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: calc(100vh - 140px);
   }
 }

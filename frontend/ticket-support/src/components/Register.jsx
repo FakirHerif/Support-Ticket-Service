@@ -1,16 +1,17 @@
-import React, { useEffect }from 'react';
+import React, { useState, useEffect }from 'react';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
-import axios from 'axios';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
+import ReCAPTCHA from 'react-google-recaptcha';
 
 const Register = () => {
 
   const navigate = useNavigate()
-  const { user } = useAuth();
+  const { user, axios } = useAuth();
+  const [captchaValue, setCaptchaValue] = useState(null);
 
     const schema = Yup.object().shape({
         username: Yup.string()
@@ -27,7 +28,7 @@ const Register = () => {
 
     const handleSubmit = async (values) => {
         try {
-          const response = await axios.post('http://localhost:8080/api/user', values);
+          const response = await axios.post('/user', values);
           console.log('Registration Successful:', response.data);
           toast.success('Registration Successful!', { autoClose: 3000 });
           navigate('/login')
@@ -42,6 +43,10 @@ const Register = () => {
         navigate('/');
       }
     }, [user, navigate]);
+
+    const handleCaptchaChange = (value) => {
+      setCaptchaValue(value);
+    };
 
     return (
         <>
@@ -62,6 +67,7 @@ const Register = () => {
                 <div className="form">
                   <form noValidate onSubmit={handleSubmit}>
                     <span>Register</span>
+                    <hr />
                     <input
                       type="text"
                       name="username"
@@ -112,7 +118,27 @@ const Register = () => {
                         touched.confirmPassword &&
                         errors.confirmPassword}
                     </p>
-                    <button type="submit" className='btn btn-primary'>Register</button>
+                    <button type="submit" className='btn btn-primary' disabled={!captchaValue}>Register</button>
+                    <hr />
+                <div className='recaptcha'>
+                  <ReCAPTCHA
+                  sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
+                  onChange={handleCaptchaChange}
+                  onError={(err) => console.error('reCAPTCHA Error:', err)}
+                  hl="en"
+                  />
+                </div>
+                <div className="text-center mt-3">
+                <hr />
+                  <p style={{fontSize: '14px'}}>
+                    Already have an account?{" "}
+                  <Link to="/login" className="text-blue-600 underlin hover:text-red-700" style={{fontWeight: 'bold', fontSize: '16px'}}>
+                    <br />
+                    Log in here
+                  </Link>{" "}
+                  </p>
+                <hr />
+                </div>
                   </form>
                 </div>
               </div>

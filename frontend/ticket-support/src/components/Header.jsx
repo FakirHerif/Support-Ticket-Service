@@ -19,7 +19,7 @@ const Header = () => {
                     className="img-fluid rounded-circle"
                     style={{ maxWidth: '50px', maxHeight: '50px', marginRight: '30px'}}
                 />
-                <Link className="navbar-brand" to="/">SendForms</Link>
+                <Link className="navbar-brand" to="/">SendformS</Link>
                 <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span className="navbar-toggler-icon"></span>
                 </button>

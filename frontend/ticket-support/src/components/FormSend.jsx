@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { toast } from 'react-toastify';
@@ -7,12 +7,14 @@ import { useAuth } from './AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useFormContext } from './FormContext';
 import '../components/basicstyle/form.css';
+import ReCAPTCHA from 'react-google-recaptcha';
 
 const FormSend = () => {
 
     const { updateFormValues, updateReferenceID } = useFormContext();
     const { user, axios } = useAuth();
     const navigate = useNavigate(); 
+    const [captchaValue, setCaptchaValue] = useState(null);
 
     const initialValues = {
         firstName: '',
@@ -101,6 +103,10 @@ const FormSend = () => {
                 toast.error('Form submission failed!', { autoClose: 3000 });
               }
         };  
+
+        const handleCaptchaChange = (value) => {
+          setCaptchaValue(value);
+        };
     
       return (
         <Formik
@@ -121,7 +127,7 @@ const FormSend = () => {
             <div className='formsend'>
               <form noValidate onSubmit={handleSubmit} encType="multipart/form-data">
                 <span>Send Form</span>
-
+                <hr />
                 <div className="grid-container">
                   <div className="grid-item-name">
                     <input
@@ -273,8 +279,17 @@ const FormSend = () => {
                 multiple
                 className="form-control inp_file"
                 />
-                
-                <button type="submit" className='btn btn-primary'>Submit</button>
+                <button type="submit" className='btn btn-primary' disabled={!captchaValue}>Submit</button>
+                <hr style={{marginBottom: '30px'}} />
+        
+                <div className='recaptchaBig'>
+                  <ReCAPTCHA
+                  sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
+                  onChange={handleCaptchaChange}
+                  onError={(err) => console.error('reCAPTCHA Error:', err)}
+                  hl="en"
+                  />
+                </div>
               </form>
             </div>
           </div>

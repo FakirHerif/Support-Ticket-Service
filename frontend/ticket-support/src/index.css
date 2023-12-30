@@ -4,7 +4,7 @@ body {
   background: linear-gradient(90deg, #4b6cb7 0%, #182848 100%);
 }
 
-.login, .register {
+.login, .register, .search {
   width: 360px;
   padding: 8% 0 0;
   margin: auto;
@@ -73,16 +73,6 @@ body {
   color: red;
 }
 
-/* .navbar {
-
-}  */
-
-.navbar-title {
-  margin-top: 20px;
-  color: #FFFFFF;
-  font-size: 24px;
-}
-
 .info-box {
   border: 3px solid #ffffff;
   border-radius: 10px;
@@ -98,4 +88,144 @@ body {
   display: block;
   font-family: 'Comfortaa', cursive;
   font-weight: bold;
+}
+
+.recaptcha {
+  display: flex;
+  transform: scale(1);
+  justify-content: center;
+ }
+
+ .recaptchaBig {
+  display: flex;
+  transform: scale(1.1);
+  justify-content: center;
+ }
+ 
+.homecomp h1 {
+  font-weight: bold;
+  color: white;
+  font-family: 'Comfortaa', cursive;
+}
+
+.homecomp p {
+  font-weight: bold;
+  color: rgb(2, 13, 40);
+  font-family: 'Comfortaa', cursive;
+}
+
+.ratings-container {
+  text-align: center;
+}
+
+.ratings-container h2 {
+  margin-top: 50px;
+  color: whitesmoke;
+  font-family: 'Comfortaa', cursive;
+  font-weight: bold;
+}
+.images-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.images-container img {
+  margin: 10px 25px;
+  width: 220px;
+}
+
+.animation {
+  color: white;
+  font-family: 'Comfortaa', cursive;
+}
+
+.animation h2 {
+  font-weight: bold;
+  margin-left: 30px;
+}
+
+.scroller {
+height: 1.2em;
+line-height: 1.2em;
+position: relative;
+overflow: hidden;
+width: 10em;
+}
+
+.scroller > span {
+position: absolute;
+top: 0;
+animation: slide 5s infinite;
+font-weight: bold;
+}
+
+@keyframes slide {
+  0% {
+    top: 0;
+  }
+  25% {
+    top: -1.25em;
+  }
+  50% {
+    top: -2.5em;
+  }
+  75% {
+    top: -3.75em;
+  }
+}
+
+.form {
+  width: 415px;
+  max-width: 415px;
+}
+
+@media (max-width: 768px) {
+  .form {
+    width: 360px;
+  }
+
+  .recaptchaBig {
+    display: flex;
+    transform: scale(0.9);
+    justify-content: center;
+  }
+  
+  .images-container img {
+    width: 125px;
+  }
+
+  .animation h2 {
+    font-weight: bold;
+    font-size: 18px;
+    margin-left: -5px;
+  }
+
+  .homecomp p {
+    font-size: 12px;
+  }
+  
+  .offsetBody img {
+    width: 290px;
+  }
+
+  .login {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: calc(100vh);
+  }
+
+  .search {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: calc(100vh);
+  }
+
+  .register {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 }

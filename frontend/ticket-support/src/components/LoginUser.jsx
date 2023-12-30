@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { Formik } from "formik";
 import * as Yup from "yup";
-import axios from 'axios';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useAuth } from './AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import ReCAPTCHA from 'react-google-recaptcha';
 
 const LoginUser = () => {
 
   const [isUser, setIsUser] = useState(false);
-  const { handleLogin, user } = useAuth();
-
+  const { handleLogin, user, axios } = useAuth();
   const navigate = useNavigate(); 
+  const [captchaValue, setCaptchaValue] = useState(null);
 
     const schema = Yup.object().shape({
         username: Yup.string()
@@ -25,7 +25,7 @@ const LoginUser = () => {
 
       const handleSubmit = async (values) => {
         try {
-          const response = await axios.post('http://localhost:8080/api/login', values);
+          const response = await axios.post('/login', values);
 
           const userRole = response.data.role;
 
@@ -56,6 +56,10 @@ const LoginUser = () => {
       }
     }, [user, navigate]);
 
+    const handleCaptchaChange = (value) => {
+      setCaptchaValue(value);
+    };
+
   return (
 <>
       {/* Wrapping form inside formik tag and passing our schema to validationSchema prop */}
@@ -77,6 +81,7 @@ const LoginUser = () => {
            {/* Passing handleSubmit parameter tohtml form onSubmit property */}
               <form noValidate onSubmit={handleSubmit}>
                 <span>Login</span>
+                <hr />
               {/* Our input html with passing formik parameters like handleChange, values, handleBlur to input properties */}
                 <input
                   type="username"
@@ -107,7 +112,27 @@ const LoginUser = () => {
                   {errors.password && touched.password && errors.password}
                 </p>
                 {/* Click on submit button to submit the form */}
-                <button type="submit" className='btn btn-primary'>Login</button>
+                <button type="submit" className='btn btn-primary' disabled={!captchaValue}>Login</button>
+                <hr />
+                <div className='recaptcha'>
+                  <ReCAPTCHA
+                  sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
+                  onChange={handleCaptchaChange}
+                  onError={(err) => console.error('reCAPTCHA Error:', err)}
+                  hl="en"
+                  />
+                </div>
+                <div className="text-center mt-3">
+                <hr />
+                  <p style={{fontSize: '14px'}}>
+                    Don't have an account?{" "}
+                  <Link to="/register" className="text-blue-600 underlin hover:text-red-700" style={{fontWeight: 'bold', fontSize: '16px'}}>
+                    <br />
+                    Sign up here
+                  </Link>{" "}
+                  </p>
+                <hr />
+                </div>
               </form>
             </div>
           </div>

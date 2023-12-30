@@ -1,13 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
+import ReCAPTCHA from 'react-google-recaptcha';
 
 const FormSearch = () => {
     const { axios } = useAuth();
-
     const navigate = useNavigate(); 
+    const [captchaValue, setCaptchaValue] = useState(null);
 
     const handleSearch = async (values) => {
       const searchTerm = values.search;
@@ -37,6 +38,10 @@ const FormSearch = () => {
         search: Yup.string().required('Reference ID required'),
       });
 
+      const handleCaptchaChange = (value) => {
+        setCaptchaValue(value);
+      };
+
       return (
         <Formik
           initialValues={initialValues}
@@ -47,9 +52,10 @@ const FormSearch = () => {
           }}
         >
           {({ values, errors, touched, handleChange, handleBlur, handleSubmit }) => (
-          <form onSubmit={handleSubmit} className="sendform">
-            <div className="formsend" style={{ maxWidth: '415px' }}>
+          <form onSubmit={handleSubmit} className="search">
+            <div className="form">
               <span>Search</span>
+              <hr />
               <input
               type="text"
               id="search"
@@ -63,7 +69,16 @@ const FormSearch = () => {
               <p className="error">
                 {errors.search && touched.search && <div>{errors.search}</div>}
               </p>
-              <button type="submit" className='btn btn-primary'>Search</button>
+              <button type="submit" className='btn btn-primary' disabled={!captchaValue}>Search</button>
+              <hr />
+              <div className='recaptcha'>
+                  <ReCAPTCHA
+                  sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
+                  onChange={handleCaptchaChange}
+                  onError={(err) => console.error('reCAPTCHA Error:', err)}
+                  hl="en"
+                  />
+                </div>
             </div>
           </form>
           )}

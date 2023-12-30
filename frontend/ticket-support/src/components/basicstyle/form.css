@@ -11,12 +11,12 @@
     background: #FFFFFF;
     border-radius: 10px;
     max-width: 660px;
-    margin: 0 auto 100px;
+    margin: 0 auto 30px;
     padding: 45px;
     text-align: center;
   }
   
-  .formsend input, .formsend textarea {
+  .formsend input, .formsend textarea, .selectStatus {
     outline: 0;
     background: #E8F0FE;
     width: 100%;
@@ -83,9 +83,19 @@
     gap: 10px; 
   }
 
+  .formsend .statement {
+    display: grid;
+    justify-items: start;
+    font-weight: bold;
+    color: #000000dd;
+    margin-left: 2px;
+    font-size: 13px;
+  }
+
   @media screen and (max-width: 768px) {
     .sendform {
       width: 360px;
+      margin: auto;
     }
   
     .formsend {
@@ -118,5 +128,20 @@
   }
   100% {
     transform: translateY(100vh) rotateZ(720deg);
+  }
+}
+
+.notFoundError {
+  border-radius: 10px;
+  width: 660px;
+  background: #FFFFFF; 
+  max-width: 660px;
+  padding: 6px;
+}
+
+@media screen and (max-width: 768px) {
+  .notFoundError {
+    width: 360px;
+    max-width: 360px;
   }
 }

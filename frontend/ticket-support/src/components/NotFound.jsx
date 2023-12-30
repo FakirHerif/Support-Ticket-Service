@@ -2,7 +2,9 @@ import React from 'react'
 
 const NotFound = () => {
   return (
-    <div>404 ERROR - Not Found</div>
+    <div className='sendform'>
+      <img className='notFoundError' src="https://i.giphy.com/qkLqpGZhf1ACB8WbTl.webp" alt="NotFound" />
+    </div>
   )
 }
 

@@ -82,3 +82,20 @@ body {
   color: #FFFFFF;
   font-size: 24px;
 }
+
+.info-box {
+  border: 3px solid #ffffff;
+  border-radius: 10px;
+  padding: 5px;
+  box-shadow: 2px 2px 10px rgb(255, 255, 255);
+ }
+
+.informationListAdmin {
+  margin-top: 20px;
+  font-size: 40px;
+  color: #ffffff;
+  margin-bottom: 25px;
+  display: block;
+  font-family: 'Comfortaa', cursive;
+  font-weight: bold;
+}

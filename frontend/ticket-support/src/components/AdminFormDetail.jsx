@@ -3,6 +3,9 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Form, Button } from 'react-bootstrap';
 import { useAuth } from './AuthContext';
+import '../components/basicstyle/form.css';
+import '../components/basicstyle/comments.css';
+import DownloadBase64Data from './DownloadBase64Data';
 
 const AdminFormDetail = () => {
 
@@ -13,6 +16,8 @@ const AdminFormDetail = () => {
   const [formData, setFormData] = useState({});
   const [responseText, setResponseText] = useState('');
   const { axios, user } = useAuth();
+  const [fileUrl, setFileUrl] = useState('');
+
 
   useEffect(() => {
     axios.get(`/informations/referenceID/${referenceID}`)
@@ -24,8 +29,8 @@ const AdminFormDetail = () => {
             return;
           }
 
-        setInfoDetails(response.data.data); // API'den gelen detayları state'e yerleştirin
-        setFormData(response.data.data); // Form verilerini doldurun
+        setInfoDetails(response.data.data);
+        setFormData(response.data.data);
         console.log("AXIOS: ******* :", axios)
       })
       .catch((error) => {
@@ -34,7 +39,7 @@ const AdminFormDetail = () => {
   }, [referenceID, axios]);
 
   const handleEditClick = () => {
-    setIsEditing(true); // Düzenleme modunu aktifleştir
+    setIsEditing(true);
   };
 
   const handleInputChange = (e) => {
@@ -54,13 +59,13 @@ const AdminFormDetail = () => {
 
     axios.put(`/informations/${infoDetails.id}`, formData)
       .then((response) => {
-        console.log('Information updated:', response.data);
-        setInfoDetails(response.data); // Güncellenmiş verileri güncellemek için
-        setIsEditing(false); // Düzenleme modunu kapat
-        console.log(infoDetails.id)
+        setInfoDetails(response.data);
+        setIsEditing(false); 
+        toast.success('Changes saved successfully!')
       })
       .catch((error) => {
         console.error('Error updating information:', error);
+        toast.error('Changes could not be applied!')
       });
   };
 
@@ -68,7 +73,7 @@ const AdminFormDetail = () => {
     if (!isEditing) {
       axios.get(`/informations/referenceID/${referenceID}`)
         .then((response) => {
-          setInfoDetails(response.data.data); // Güncellenmiş detayları state'e yerleştirin
+          setInfoDetails(response.data.data);
         })
         .catch((error) => {
           console.error('Error fetching updated details:', error);
@@ -77,7 +82,7 @@ const AdminFormDetail = () => {
   }, [isEditing, referenceID, axios]);
 
   const handleDeleteClick = () => {
-    const confirmDelete = window.confirm('Emin misiniz?');
+    const confirmDelete = window.confirm('Are you sure?');
   
     if (confirmDelete) {
       axios.delete(`/informations/${infoDetails.id}`, {
@@ -85,27 +90,21 @@ const AdminFormDetail = () => {
       })
         .then((response) => {
           console.log('Information deleted:', response.data);
-          console.log(infoDetails.id);
           navigate(`/admin/basvuru-listesi/`)
-          toast.success('Silme İşlemi Başarılı!', { autoClose: 3000 })
+          toast.success('Deletion Successful!', { autoClose: 3000 })
         })
         .catch((error) => {
           console.error('Error deleting information:', error);
-          console.log(infoDetails.id);
-          console.log(error.response.data);
-          toast.error('Bir Hata Oluştu!', { autoClose: 3000 })
+          toast.error('Delete Failed!', { autoClose: 3000 })
         });
     }
   };
-
-
-
 
   const handleResponseSubmit = (e) => {
     e.preventDefault();
   
     if (responseText.trim() === '') {
-      toast.error('Lütfen bir cevap yazın!');
+      toast.error('Please write a comment!');
       return;
     }
   
@@ -128,214 +127,495 @@ const AdminFormDetail = () => {
     })
       .then((response) => {
         console.log('Response sent:', response.data);
-        console.log("cevap:", data.responseText)
-        toast.success('Yorum başarıyla gönderildi!', { autoClose: 3000 });
-
-       console.log("DATE::::", response.data.replyDate,)
-
+        toast.success('Comment sent successfully!', { autoClose: 3000 });
         setInfoDetails((prevDetails) => ({
           ...prevDetails,
           response: prevDetails.response
             ? [...prevDetails.response, data] // Append new response
             : [data], // Create a new array with the response if no responses exist
         }));
-        console.log("DENEME.",data)
 
         setResponseText('');
       })
       .catch((error) => {
         console.error('Error sending response:', error);
-        toast.error('Yorum gönderilirken bir hata oluştu!', { autoClose: 3000 });
-        console.log(error.response.data);
+        toast.error('An error occurred while submitting the comment!', { autoClose: 3000 });
       });
   };
 
+  const handleCancel = () => {
+    setIsEditing(false); 
+    toast.info('Changes are canceled!', { autoClose: 3000 });
+  };
 
+  useEffect(() => {
+    if (infoDetails && infoDetails.attachments) {
+        const base64Data = infoDetails.attachments;
+        const imageUrl = `data:image/jpeg;base64,${base64Data}`; // for PNG, JPG, JPEG files
+        setFileUrl(imageUrl);
+    }
+}, [infoDetails]);
+
+const handleDownload = () => {
+    if (fileUrl) {
+        const link = document.createElement('a');
+        link.href = fileUrl;
+
+        // Set the file extension
+        const fileExtension = DownloadBase64Data(fileUrl);
+
+        // Set File Name and Set Download Attribute
+        const fileName = `download.${fileExtension}`;
+        link.setAttribute('download', fileName);
+        link.click();
+    }
+};
+
+const handleDeleteResponse = (responseID) => {
+  const confirmDelete = window.confirm('Are you sure you want to delete this comment?');
+  console.log("Seçilen yorumun ID'si:", responseID); 
+  if (confirmDelete) {
+    axios.delete(`/response/${responseID}`)
+      .then((response) => {
+        console.log(response)
+        const updatedDetails = {
+          ...infoDetails,
+          response: infoDetails.response.filter((res) => res.id !== responseID)
+        };
+        setInfoDetails(updatedDetails);
+        toast.success('Comment deleted successfully!', { autoClose: 3000 });
+      })
+      .catch((error) => {
+        console.error('Error deleting comment:', error);
+        toast.error('Failed to delete comment!', { autoClose: 3000 });
+      });
+  }
+};
 
   return (
     <div>
-      <div className='detaylar'>
-        <h2>AdminFormDetail</h2><br />
-        {/* Eğer düzenleme modundaysa düzenleme formu göster */}
-        {isEditing ? (
-  <Form onSubmit={handleSubmit}>
-
-            <Form.Group controlId='firstName'>
-              <Form.Label>İsim:</Form.Label>
-              <Form.Control
-                type='text'
-                name='firstName'
+      <div className='sendform'>
+        <div className='formsend'>
+          <span>Form Details</span>
+          <hr />
+          {isEditing ? (
+          <Form onSubmit={handleSubmit}>
+            <div className="grid-container">
+              <div className="grid-item-name">
+                <div className='statement'> 💬 First Name</div>
+                <input
+                type="text"
+                id="firstName"
+                name="firstName"
                 value={formData.firstName}
                 onChange={handleInputChange}
+                placeholder="💬 Enter Firstname"
+                className="form-control inp_text"
+                />
+              </div>
+              <div className="grid-item-lastname">
+              <div className='statement'>💬 Last Name</div>
+                <input
+                type="text"
+                id="lastName"
+                name="lastName"
+                value={formData.lastName} 
+                onChange={handleInputChange}
+                placeholder="💬 Enter Lastname"
+                className="form-control inp_text"
+                />
+              </div>
+            </div>
+
+            <div className="grid-containerTwo">
+              <div className="grid-item-identification">
+              <div className='statement'>📝 Identification No</div>
+                <input
+                type="number"
+                id="identificationNo"
+                name="identificationNo"
+                value={formData.identificationNo} 
+                onChange={handleInputChange} 
+                placeholder="📝 Enter Identity No"
+                className="form-control inp_number"
+                />
+              </div>
+              <div className="grid-item-age">
+              <div className='statement'>📆 Age</div>
+                <input
+                type="number"
+                id="age"
+                name="age"
+                value={formData.age} 
+                onChange={handleInputChange}
+                placeholder="📆 Enter Age"
+                className="form-control inp_number"
+                />
+              </div>
+            </div>
+            <div className='statement'>💒 Address</div>
+            <input
+                type="text"
+                id="address"
+                name="address"
+                value={formData.address} 
+                onChange={handleInputChange} 
+                placeholder="💒 Enter Address"
+                className="form-control inp_text"
               />
-            </Form.Group>
+              
+              <div className="grid-container">
+                <div className="grid-item-city">
+                <div className='statement'>🏴 City</div>
+                  <input
+                  type="text"
+                  id="city"
+                  name="city"
+                  value={formData.city} 
+                  onChange={handleInputChange} 
+                  placeholder="🏴 Enter City"
+                  className="form-control inp_text"
+                  />
+                </div>
+                <div className="grid-item-town">
+                <div className='statement'>🏲 Town</div>
+                  <input
+                  type="text"
+                  id="town"
+                  name="town"
+                  value={formData.town} 
+                  onChange={handleInputChange} 
+                  placeholder="🏲 Enter Town"
+                  className="form-control inp_text"
+                  />
+                </div>
+              </div>  
 
-            <Form.Group controlId='lastName'>
-              <Form.Label>Soyisim:</Form.Label>
-              <Form.Control
-              type='text' 
-              name='lastName' 
-              value={formData.lastName} 
-              onChange={handleInputChange} 
+              <div className='statement'>📞 Phone Number</div>
+              <input
+                type="text"
+                id="phone"
+                name="phone"
+                value={formData.phone} 
+                onChange={handleInputChange}
+                placeholder="📞 Enter Phone Number"
+                className="form-control inp_text"
               />
-            </Form.Group>
 
-            <Form.Group controlId='age'>
-              <Form.Label>Yaş</Form.Label>
-              <Form.Control
-              type='number' 
-              name='age'
-              value={formData.age} 
-              onChange={handleInputChange} 
+              <div className='statement'>📌 Form Title</div>
+              <input
+                type="text"
+                id="title"
+                name="title"
+                value={formData.title} 
+                onChange={handleInputChange}
+                placeholder="📌 Enter Form Title"
+                className="form-control inp_text"
               />
-            </Form.Group>
 
-            <Form.Group controlId='identificationNo'>
-              <Form.Label>TC Kimlik No:</Form.Label>
-              <Form.Control
-              type='number' 
-              name='identificationNo'
-              value={formData.identificationNo} 
-              onChange={handleInputChange} 
-              />
-            </Form.Group>
+              <div className='statement'>💭 Form Content</div>
+              <textarea
+                type='text'
+                id="content"
+                name="content"
+                value={formData.content} 
+                onChange={handleInputChange} 
+                placeholder="💭 Enter Form Content"
+                className="form-control inp_text"
+              ></textarea>
 
-            <Form.Group controlId='address'>
-              <Form.Label>Adres:</Form.Label>
-              <Form.Control
-              type='text' 
-              name='address' 
-              value={formData.address} 
-              onChange={handleInputChange} 
-              />
-            </Form.Group>
-
-            <Form.Group controlId='city'>
-              <Form.Label>İl:</Form.Label>
-              <Form.Control
-              type='text' 
-              name='city' 
-              value={formData.city} 
-              onChange={handleInputChange} 
-              />
-            </Form.Group>
-
-            <Form.Group controlId='town'>
-              <Form.Label>İlçe:</Form.Label>
-              <Form.Control
-              type='text' 
-              name='town' 
-              value={formData.town} 
-              onChange={handleInputChange} 
-              />
-            </Form.Group>
-
-            <Form.Group controlId='phone'>
-              <Form.Label>Tel No:</Form.Label>
-              <Form.Control
-              type='text' 
-              name='phone' 
-              value={formData.phone} 
-              onChange={handleInputChange} 
-              />
-            </Form.Group>
-
-            <Form.Group controlId='title'>
-              <Form.Label>Şikayet Başlığı:</Form.Label>
-              <Form.Control
-              type='text' 
-              name='title' 
-              value={formData.title} 
-              onChange={handleInputChange} 
-              />
-            </Form.Group>
-
-            <Form.Group controlId='content'>
-              <Form.Label>Şikayet Detayı:</Form.Label>
-              <Form.Control
-              type='text' 
-              name='content' 
-              value={formData.content} 
-              onChange={handleInputChange} 
-              />
-            </Form.Group>
-
-
+            <div className='statement'>❓ Status</div>
             <Form.Group controlId='status'>
-              <Form.Label>Şikayet Durumu:</Form.Label>
               <Form.Control
                 as='select'
                 name='status'
                 value={formData.status}
                 onChange={handleStatusChange}
+                className="selectStatus"
               >
-                <option value=''>Seçiniz</option>
-                <option value='çözüldü'>Çözüldü</option>
-                <option value='iptal edildi'>İptal Edildi</option>
-                <option value='cevap bekliyor'>Cevap Bekliyor</option>
+                <option value='çözüldü'>Resolved</option>
+                <option value='iptal edildi'>Cancelled</option>
+                <option value='cevap bekliyor'>Waiting</option>
               </Form.Control>
             </Form.Group>
-
-
-
-        <Button variant='primary' type='submit'>Güncelle</Button>
-  </Form>
-        ) : (
-          // Düzenleme modunda değilse mevcut bilgileri göster ve düzenleme butonunu göster
+            <Button variant='success' type='submit'>Save</Button>
+            <Button variant='warning' style={{marginTop: '10px'}} onClick={handleCancel}>Cancel</Button>
+          </Form>
+          
+          ) : (
           <>
             <div>
-              Reference ID: {infoDetails.referenceID}<br />
-              First Name: {infoDetails.firstName}<br />
-              Last Name: {infoDetails.lastName}<br />
-              Age: {infoDetails.age}<br />
-              IdenrificationNo: {infoDetails.identificationNo}<br />
-              Address: {infoDetails.address}<br />
-              City: {infoDetails.city}<br />
-              Town: {infoDetails.town}<br />
-              Phone: {infoDetails.phone}<br />
-              Title: {infoDetails.title}<br />
-              Content: {infoDetails.content}<br />
-              Status: {infoDetails.status}<br />
-              Informations Owner: {infoDetails.informationsOwner}<br />
-              Created Date: {infoDetails.createdDate}<br />
-              Attachments: {infoDetails.attachments}<br />
+              <div className="grid-container">
+                <div className="grid-item-name">
+                  <div className='statement'>
+                    💬 First Name
+                  </div>
+                  <input
+                  type="text"
+                  id="firstName"
+                  name="firstName"
+                  value={infoDetails.firstName}
+                  onChange={handleInputChange}
+                  className="form-control inp_text"
+                  disabled 
+                  />
+                </div>
+                <div className="grid-item-lastname">
+                  <div className='statement'>
+                    💬 Last Name
+                  </div>
+                  <input
+                  type="text"
+                  id="lastName"
+                  name="lastName"
+                  value={infoDetails.lastName} 
+                  onChange={handleInputChange}
+                  className="form-control inp_text"
+                  disabled 
+                  />
+                </div>
+              </div>
+
+              <div className="grid-containerTwo">
+                <div className="grid-item-identification">
+                  <div className='statement'>
+                    📝 Identification No
+                  </div>
+                  <input
+                  type="number"
+                  id="identificationNo"
+                  name="identificationNo"
+                  value={infoDetails.identificationNo} 
+                  onChange={handleInputChange} 
+                  className="form-control inp_number"
+                  disabled 
+                  />
+                </div>
+                <div className="grid-item-age">
+                  <div className='statement'>
+                    📆 Age
+                  </div>
+                  <input
+                  type="number"
+                  id="age"
+                  name="age"
+                  value={infoDetails.age} 
+                  onChange={handleInputChange}
+                  className="form-control inp_number"
+                  disabled 
+                  />
+                </div>
+              </div>
+                      
+                  <div className='statement'>
+                    💒 Address
+                  </div>
+                  <input
+                  type="text"
+                  id="address"
+                  name="address"
+                  value={infoDetails.address} 
+                  onChange={handleInputChange} 
+                  className="form-control inp_text"
+                  disabled
+                  />
+              
+            <div className="grid-container">
+              <div className="grid-item-city">
+                <div className='statement'>
+                  🏴 City
+                </div>
+                  <input
+                  type="text"
+                  id="city"
+                  name="city"
+                  value={infoDetails.city} 
+                  onChange={handleInputChange} 
+                  className="form-control inp_text"
+                  disabled
+                  />
+                </div>
+                <div className="grid-item-town">
+                <div className='statement'>
+                  🏲 Town
+                </div>
+                  <input
+                  type="text"
+                  id="town"
+                  name="town"
+                  value={infoDetails.town} 
+                  onChange={handleInputChange} 
+                  className="form-control inp_text"
+                  disabled
+                  />
+                </div>
+              </div>  
+
+              <div className='statement'>
+                📞 Phone Number
+              </div>
+              <input
+                type="text"
+                id="phone"
+                name="phone"
+                value={infoDetails.phone} 
+                onChange={handleInputChange}
+                className="form-control inp_text"
+                disabled
+              />
+
+              <div className='statement'>
+                📌 Form Title
+              </div>
+              <input
+                type="text"
+                id="title"
+                name="title"
+                value={infoDetails.title} 
+                onChange={handleInputChange}
+                className="form-control inp_text"
+                disabled
+              />
+
+              <div className='statement'>
+                💭 Form Content
+              </div>
+              <textarea
+                type='text'
+                id="content"
+                name="content"
+                value={infoDetails.content} 
+                onChange={handleInputChange} 
+                className="form-control inp_text"
+                disabled
+              >
+              </textarea>
+
+              <div className="grid-containerTwo">
+                <div className="grid-item-referenceID">
+                  <div className='statement'>
+                    🎫 Reference ID
+                  </div>
+                    <input
+                    type="text"
+                    id="title"
+                    name="title"
+                    value={infoDetails.referenceID} 
+                    onChange={handleInputChange}
+                    className="form-control inp_text"
+                    disabled
+                    />
+                </div>
+
+                <div className="grid-item-status">
+                  <div className='statement'>
+                    ❓ Status
+                  </div>
+                  <input
+                  type="text"
+                  id="title"
+                  name="title"
+                  value={infoDetails.status} 
+                  onChange={handleInputChange}
+                  className="form-control inp_text"
+                  disabled
+                  />
+              </div>
             </div>
-            <Button variant='info' onClick={handleEditClick}>Düzenle</Button>
-            <Button variant='danger' onClick={handleDeleteClick}>Sil</Button>
+
+            <div className="grid-container">
+              <div className="grid-item-username">
+                <div className='statement'>
+                  👥 Username
+                </div>
+                <input
+                type="text"
+                id="title"
+                name="title"
+                value={infoDetails.informationsOwner || 'guest'} 
+                onChange={handleInputChange}
+                className="form-control inp_text"
+                disabled
+                />
+              </div>
+              
+              <div className="grid-item-createdDate">
+                <div className='statement'>
+                  ⌚ Created Date
+                </div>
+                <input
+                type="text"
+                id="title"
+                name="title"
+                value={infoDetails.createdDate} 
+                onChange={handleInputChange}
+                className="form-control inp_text"
+                disabled
+                />
+              </div>
+            </div>
+              
+            <div className='statement'>
+              📁 Attachments
+            </div>
+              {fileUrl && (
+                <div>
+                  <Button variant='dark' onClick={handleDownload}>Download File</Button>
+                </div>
+              )}
+            <hr />
+          </div>
+            <Button variant='info' onClick={handleEditClick}>Edit</Button>
+            <Button variant='danger' style={{ marginTop: '10px'}} onClick={handleDeleteClick}>Delete</Button>
           </>
+          )}  
+        </div>
+
+    {!isEditing && (
+      <div>
+        <h3 style={{color: 'white', fontWeight: 'bold'}}>Send Comment</h3>
+        <Form onSubmit={handleResponseSubmit}>
+          <Form.Group controlId='responseText'>
+            <Form.Control
+              as='textarea'
+              rows={4}
+              value={responseText}
+              onChange={(e) => setResponseText(e.target.value)}
+              style={{marginBottom: '15px'}}
+            />
+          </Form.Group>
+          <div style={{textAlign: 'right' }}>
+            <Button variant='success' type='submit'>
+              Send
+            </Button>
+          </div>
+        </Form>
+
+      <div className='comments'>
+        <h3>Comments</h3>
+          <ul>
+            {infoDetails.response && infoDetails.response.map((res, index) => (
+            <li key={index}>
+              <div className='commentsText'>
+                <strong>Response Text:</strong> {res.responseText}<br />
+              </div>
+              <div className='commentsDateOwner'>
+                <div><strong>Owner:</strong> {res.responseOwner}</div>
+                <div><strong style={{ marginTop: '5px' }}>Date:</strong> {res.replyDate}</div>
+              </div>
+                <hr />
+                <div style={{textAlign: 'right'}}>
+                  <Button variant='danger' onClick={() => handleDeleteResponse(res.id)}>
+                    Delete
+                  </Button>
+                </div>
+              </li>
+              ))}
+            </ul>
+          </div>
+        </div>
         )}
       </div>
-
-      <h3>Response:</h3>
-      <ul>
-        {infoDetails.response && infoDetails.response.map((res, index) => (
-          <li key={index}>
-            <strong>Response Text:</strong> {res.responseText}<br />
-            <strong>Reply Date:</strong> {res.replyDate}<br />
-            <strong>Response Owner:</strong> {res.responseOwner}
-          </li>
-        ))}
-      </ul>
-
-
-          <div>
-      <h3>Yorum Yap</h3>
-      <Form onSubmit={handleResponseSubmit}>
-        <Form.Group controlId='responseText'>
-          <Form.Label>Yorum:</Form.Label>
-          <Form.Control
-            as='textarea'
-            rows={3}
-            value={responseText}
-            onChange={(e) => setResponseText(e.target.value)}
-          />
-        </Form.Group>
-        <Button variant='primary' type='submit'>
-          Gönder
-        </Button>
-      </Form>
-    </div>
-
     </div>
   );
 };

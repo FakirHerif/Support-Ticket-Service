@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Card, Container, Row, Col, Button, Dropdown } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from './AuthContext';
 
 const AdminFormlist = () => {
   const [informations, setInformations] = useState([]);
@@ -10,9 +10,10 @@ const AdminFormlist = () => {
 
   const [filteredInformations, setFilteredInformations] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState('');
+  const { axios } = useAuth();
 
   useEffect(() => {
-    axios.get('http://localhost:8080/api/informations')
+    axios.get('/informations')
       .then((response) => {
         setInformations(response.data.data);
         setFilteredInformations(response.data.data);
@@ -20,26 +21,42 @@ const AdminFormlist = () => {
       .catch((error) => {
         console.error('Error fetching data:', error);
       });
-  }, []);
+  }, [axios]);
 
   const redirectToDetailPage = (referenceID) => {
     navigate(`/admin/basvuru/${referenceID}`);
   };
 
   const statusOptions = {
-    '': 'Tümü',
-    'cevap bekliyor': 'Cevap Bekliyor',
-    'çözüldü': 'Çözüldü',
-    'iptal edildi': 'İptal Edildi'
+    '': 'All Status',
+    'cevap bekliyor': 'Waiting',
+    'çözüldü': 'Resolved',
+    'iptal edildi': 'Cancelled'
+  };
+
+  const formatDate = (dateString) => {
+    const [dayMonthYear, time] = dateString.split(' ');
+    const [day, month, year] = dayMonthYear.split('.');
+    const [hour, minute, second] = time.split(':');
+    
+    return new Date(year, month - 1, day, hour, minute, second);
   };
 
   useEffect(() => {
-    if (selectedStatus === '') {
-      setFilteredInformations(informations);
-    } else {
-      const filteredData = informations.filter(info => info.status === selectedStatus);
-      setFilteredInformations(filteredData);
+    let filteredData = [...informations];
+  
+    if (selectedStatus !== '') {
+      filteredData = informations.filter(info => info.status === selectedStatus);
     }
+  
+    const sortedInformations = [...filteredData].sort((a, b) => {
+      const dateA = formatDate(a.createdDate);
+      const dateB = formatDate(b.createdDate);
+      return dateB - dateA;
+    });
+  
+    setFilteredInformations(sortedInformations);
+  
   }, [selectedStatus, informations]);
 
   const handleFilter = (status) => {
@@ -63,11 +80,11 @@ const AdminFormlist = () => {
   const getStatusRibbonText = (status) => {
     switch (status) {
       case 'cevap bekliyor':
-        return 'Bekliyor';
+        return 'Waiting';
       case 'çözüldü':
-        return 'Çözüldü';
+        return 'Resolved';
       case 'iptal edildi':
-        return 'İptal Edildi';
+        return 'Cancelled';
       default:
         return '';
     }
@@ -75,7 +92,7 @@ const AdminFormlist = () => {
 
   return (
     <Container>
-      <h1 className="navbar-title">Informations List</h1>
+      <h1 className="informationListAdmin">Informations List</h1>
       <Dropdown>
         <Dropdown.Toggle variant="primary" id="dropdown-basic">
           {statusOptions[selectedStatus] || statusOptions['']}
@@ -92,6 +109,7 @@ const AdminFormlist = () => {
       <Row xs={1} md={1} lg={3} className="g-5">
         {filteredInformations.map((info, index) => (
           <Col key={index}>
+            <div className="info-box">
             <Card>
             <span
                 className={`position-absolute top-0 end-0 p-1 ${getStatusRibbonColor(info.status)}`}
@@ -111,27 +129,24 @@ const AdminFormlist = () => {
               >
                 {getStatusRibbonText(info.status)}
               </span>
-              <Card.Body>
-                <Card.Title>Başvuran: {info.firstName} {info.lastName}</Card.Title>
-                <Card.Text>
-                  Age: {info.age}<br />
-                  IdenrificationNo: {info.identificationNo}<br />
-                  Address: {info.address}<br />
-                  City: {info.city} Town: {info.town}<br />
-                  Phone: {info.phone}<br />
-                  Title: {info.title}<br />
-                  Content: {info.content}<br />
-                  Reference ID: {info.referenceID}<br />
-                  Status: {info.status}<br />
-                  Informations Owner: {info.informationsOwner}<br />
-                  Created Date: {info.createdDate}<br />
-                  <br />
+              <Card.Body style={{ fontFamily: 'Comfortaa, cursive'}}>
+              <div className="info-details">
+                <Card.Title><span style={{fontWeight: 'bold'}}>Sender:</span> {info.firstName} {info.lastName}</Card.Title>
+
+                  <hr />
+                  <span style={{fontWeight: 'bold'}}>Title:</span> {info.title}
+                  <hr />
+                  <span style={{fontWeight: 'bold'}}>Reference ID:</span> {info.referenceID}
+                  <hr />
+                  <span style={{fontWeight: 'bold'}}>Created Date:</span> {info.createdDate}
+                  <hr />
                   <Button onClick={() => redirectToDetailPage(info.referenceID)}>
                     Go to Details
                   </Button>
-                </Card.Text>
+                </div>
               </Card.Body>
             </Card>
+            </div>
           </Col>
         ))}
       </Row>

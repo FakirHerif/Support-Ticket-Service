@@ -1,11 +1,16 @@
-import React from 'react';
+import React, { useEffect }from 'react';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from './AuthContext';
 
 const Register = () => {
+
+  const navigate = useNavigate()
+  const { user } = useAuth();
 
     const schema = Yup.object().shape({
         username: Yup.string()
@@ -25,11 +30,18 @@ const Register = () => {
           const response = await axios.post('http://localhost:8080/api/user', values);
           console.log('Registration Successful:', response.data);
           toast.success('Registration Successful!', { autoClose: 3000 });
+          navigate('/login')
         } catch (error) {
           console.error('Registration Failed:', error.response.data);
           toast.error(`Registration Failed: ${error.response.data.details}!`, { autoClose: 3000 });
         }
     };
+
+    useEffect(() => {
+      if (user) {
+        navigate('/');
+      }
+    }, [user, navigate]);
 
     return (
         <>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Formik } from "formik";
 import * as Yup from "yup";
 import axios from 'axios';
@@ -10,7 +10,7 @@ import { useNavigate } from 'react-router-dom';
 const LoginUser = () => {
 
   const [isUser, setIsUser] = useState(false);
-  const { handleLogin } = useAuth();
+  const { handleLogin, user } = useAuth();
 
   const navigate = useNavigate(); 
 
@@ -44,10 +44,17 @@ const LoginUser = () => {
         }
     };  
 
-    if (isUser) {
-        // If user, redirect to home
-        navigate('/')
+    useEffect(() => {
+      if (isUser) {
+        navigate('/');
       }
+    }, [isUser, navigate]);
+  
+    useEffect(() => {
+      if (user) {
+        navigate('/');
+      }
+    }, [user, navigate]);
 
   return (
 <>

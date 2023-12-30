@@ -7,19 +7,17 @@ import { useAuth } from './AuthContext';
 const UserFormlist = () => {
     const [informations, setInformations] = useState([]);
     const navigate = useNavigate();
-  
     const [filteredInformations, setFilteredInformations] = useState([]);
     const [selectedStatus, setSelectedStatus] = useState('');
     const { axios, user } = useAuth();
+    const [viewType, setViewType] = useState('allForms');
 
 
     useEffect(() => {
-      console.log("User:", user);
         axios.get('/informations')
           .then((response) => {
             setInformations(response.data.data);
-            const userInformations = response.data.data.filter(info => info.informationsOwner === user);
-            setFilteredInformations(userInformations);
+            setFilteredInformations(response.data.data);
           })
           .catch((error) => {
             console.error('Error fetching data:', error);
@@ -92,27 +90,44 @@ const UserFormlist = () => {
             return '';
         }
       };
+
+      const handleViewType = (type) => {
+        setViewType(type);
+      };
     
-      return (
-        <Container>
-          <h1 className="informationListAdmin">Informations List</h1>
-          <Dropdown>
-            <Dropdown.Toggle variant="primary" id="dropdown-basic">
-              {statusOptions[selectedStatus] || statusOptions['']}
-            </Dropdown.Toggle>
-            <Dropdown.Menu>
-              {Object.keys(statusOptions).map((status, index) => (
-                <Dropdown.Item key={index} onClick={() => handleFilter(status)}>
-                  {statusOptions[status]}
-                </Dropdown.Item>
+  return (
+    <Container>
+      <h1 className="informationListAdmin">Informations List</h1>
+      <div className="d-flex" style={{marginBottom: '25px'}}>
+        <Dropdown style={{marginRight: '10px'}}>
+          <Dropdown.Toggle variant="primary" id="dropdown-basic">
+            {statusOptions[selectedStatus] || statusOptions['']}
+          </Dropdown.Toggle>
+        <Dropdown.Menu>
+          {Object.keys(statusOptions).map((status, index) => (
+              <Dropdown.Item key={index} onClick={() => handleFilter(status)}>
+                {statusOptions[status]}
+              </Dropdown.Item>
               ))}
             </Dropdown.Menu>
           </Dropdown>
-          <br />
+          {user && (
+          <Dropdown>
+        <Dropdown.Toggle variant="success" id="dropdown-basic">
+          {viewType === 'allForms' ? 'All Forms' : 'My Forms'}
+        </Dropdown.Toggle>
+        <Dropdown.Menu>
+          <Dropdown.Item onClick={() => handleViewType('allForms')}>All Forms</Dropdown.Item>
+          <Dropdown.Item onClick={() => handleViewType('myForms')}>My Forms</Dropdown.Item>
+        </Dropdown.Menu>
+      </Dropdown>
+      )}
+  </div>
           <Row xs={1} md={1} lg={3} className="g-5">
-            {filteredInformations
-        .filter(info => info.informationsOwner === user) // Filter only those belonging to the user
-        .map((info, index) => (
+          {filteredInformations
+          .filter((info) => (viewType === 'myForms' && user ? info.informationsOwner === user : true))
+          .filter((info) => selectedStatus === '' || info.status === selectedStatus)
+          .map((info, index) => (
               <Col key={index}>
                 <div className="info-box">
                 <Card>
@@ -152,9 +167,11 @@ const UserFormlist = () => {
                 </Card>
                 </div>
               </Col>
-            ))}
+            ))
+            }
           </Row>
         </Container>
+        
       );
     };
 

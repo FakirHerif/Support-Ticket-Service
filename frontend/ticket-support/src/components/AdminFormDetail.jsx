@@ -6,6 +6,7 @@ import { useAuth } from './AuthContext';
 import '../components/basicstyle/form.css';
 import '../components/basicstyle/comments.css';
 import DownloadBase64Data from './DownloadBase64Data';
+import NotFound from './NotFound';
 
 const AdminFormDetail = () => {
 
@@ -17,24 +18,20 @@ const AdminFormDetail = () => {
   const [responseText, setResponseText] = useState('');
   const { axios, user } = useAuth();
   const [fileUrl, setFileUrl] = useState('');
-
+  const [showNotFound, setShowNotFound] = useState(false);
 
   useEffect(() => {
     axios.get(`/informations/referenceID/${referenceID}`)
       .then((response) => {
-
-
         if (!response.data.data.id || response.data.data.id === 0 || response.data.data.id === '') {
-            console.log("error sayfa yok.")
-            return;
+          setShowNotFound(true);
           }
-
         setInfoDetails(response.data.data);
         setFormData(response.data.data);
-        console.log("AXIOS: ******* :", axios)
       })
       .catch((error) => {
         console.error('Error fetching details:', error);
+        setShowNotFound(true);
       });
   }, [referenceID, axios]);
 
@@ -194,6 +191,7 @@ const handleDeleteResponse = (responseID) => {
 
   return (
     <div>
+      {!showNotFound && (
       <div className='sendform'>
         <div className='formsend'>
           <span>Form Details</span>
@@ -578,6 +576,7 @@ const handleDeleteResponse = (responseID) => {
           <Form.Group controlId='responseText'>
             <Form.Control
               as='textarea'
+              placeholder='Write your comment...'
               rows={4}
               value={responseText}
               onChange={(e) => setResponseText(e.target.value)}
@@ -616,6 +615,8 @@ const handleDeleteResponse = (responseID) => {
         </div>
         )}
       </div>
+       )}
+       {showNotFound && <NotFound />} {/* Here is controlled to show the notfound component */}
     </div>
   );
 };

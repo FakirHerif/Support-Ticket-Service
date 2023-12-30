@@ -16,6 +16,7 @@ import AdminFormlist from "./components/AdminFormlist";
 import AdminFormDetail from "./components/AdminFormDetail";
 import PrivateRoute from './components/PrivateRoute';
 import NotFound from "./components/NotFound";
+import UserFormlist from "./components/UserFormlist";
 
 
 function App() {
@@ -41,6 +42,7 @@ function App() {
             <Route path="/basvuru/:referenceID" element={<FormDetail />} />
             <Route path="/admin/basvuru-listesi" element={<PrivateRoute Component={AdminFormlist} />} />
             <Route path="/admin/basvuru/:referenceID" element={<PrivateRoute Component={AdminFormDetail} />} />
+            <Route path="/user/basvuru-listesi" element={<UserFormlist />} />
           </Routes>
         </FormProvider>
       </AuthProvider>  

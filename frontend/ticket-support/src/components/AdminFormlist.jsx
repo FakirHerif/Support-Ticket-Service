@@ -140,9 +140,11 @@ const AdminFormlist = () => {
                   <hr />
                   <span style={{fontWeight: 'bold'}}>Created Date:</span> {info.createdDate}
                   <hr />
-                  <Button onClick={() => redirectToDetailPage(info.referenceID)}>
+                  <div>
+                  <Button style={{width: '100%'}} onClick={() => redirectToDetailPage(info.referenceID)}>
                     Go to Details
                   </Button>
+                  </div>
                 </div>
               </Card.Body>
             </Card>

@@ -29,6 +29,9 @@ const Header = () => {
                             </li>
                         )}
                         <li className="nav-item">
+                            <Link className="nav-link" to="/user/basvuru-listesi">uSRRR Listesi</Link>
+                        </li>
+                        <li className="nav-item">
                             <Link className="nav-link" to="/basvuru-olustur">Send Form</Link>
                         </li>
                         <li className="nav-item">

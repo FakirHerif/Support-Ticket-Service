@@ -19,7 +19,7 @@ const Home = () => {
 </div>
         <div className="col-md-6 offset-md-3 offsetBody">
           <h1 className="text-center mb-4">Welcome to SendformS</h1>
-          <hr />
+          <hr style={{color: 'white'}} />
           <p className="text-center">An amazing platform to send and manage forms !</p>
           <img
             src="https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExNjBzZjUwOTg1ZjJzZ3UzMXo5ajN4djk1aGEwYnIydTVmYmlyYXN6OSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/Ur2JuIYmAyYWPJNsLN/giphy.gif"

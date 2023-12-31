@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Formik } from "formik";
 import * as Yup from "yup";
-import axios from 'axios';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useAuth } from './AuthContext';
@@ -10,8 +9,9 @@ import { useNavigate } from 'react-router-dom';
 const LoginAdmin = () => {
     const [isAdmin, setIsAdmin] = useState(false);
     const { handleLogin } = useAuth();
-
     const navigate = useNavigate()
+    const [isPasswordVisible, setPasswordVisibility] = useState(false);
+    const { axios } = useAuth();
 
     const schema = Yup.object().shape({
         username: Yup.string()
@@ -24,7 +24,7 @@ const LoginAdmin = () => {
 
     const handleSubmit = async (values) => {
         try {
-          const response = await axios.post('http://localhost:8080/api/login', values);
+          const response = await axios.post('/login', values);
           
           const userRole = response.data.role;
 
@@ -47,6 +47,10 @@ const LoginAdmin = () => {
          navigate('/admin/basvuru-listesi');
       }
 
+      const togglePasswordVisibility = () => {
+        setPasswordVisibility(!isPasswordVisible);
+      };
+  
   return (
     <>
       <Formik
@@ -80,8 +84,9 @@ const LoginAdmin = () => {
                 <p className="error">
                   {errors.username && touched.username && errors.username}
                 </p>
+                <div className="input-with-icon">
                 <input
-                  type="password"
+                  type={isPasswordVisible ? 'text' : 'password'}
                   name="password"
                   onChange={handleChange}
                   onBlur={handleBlur}
@@ -89,6 +94,13 @@ const LoginAdmin = () => {
                   placeholder="🔑 Enter password"
                   className="form-control"
                 />
+                  <span
+                    className="toggle-password"
+                    onClick={togglePasswordVisibility}
+                  >
+                    {isPasswordVisible ? 'Hide 🌝' : 'Show 🌚'}
+                  </span>
+                  </div>
                 <p className="error">
                   {errors.password && touched.password && errors.password}
                 </p>

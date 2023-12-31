@@ -180,6 +180,29 @@ font-weight: bold;
   max-width: 415px;
 }
 
+.input-with-icon {
+  position: relative;
+  user-select: none;
+}
+
+.input-with-icon input[type="password"] {
+  padding-right: 30px;
+}
+
+.input-with-icon .toggle-password {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 5px;
+  cursor: pointer;
+  color: #888;
+  font-size: 14px;
+}
+
+.input-with-icon .toggle-password:hover {
+  color: #333;
+}
+
 @media (max-width: 768px) {
   .form {
     width: 360px;

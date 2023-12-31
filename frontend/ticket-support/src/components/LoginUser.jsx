@@ -13,6 +13,7 @@ const LoginUser = () => {
   const { handleLogin, user, axios } = useAuth();
   const navigate = useNavigate(); 
   const [captchaValue, setCaptchaValue] = useState(null);
+  const [isPasswordVisible, setPasswordVisibility] = useState(false);
 
     const schema = Yup.object().shape({
         username: Yup.string()
@@ -60,6 +61,10 @@ const LoginUser = () => {
       setCaptchaValue(value);
     };
 
+    const togglePasswordVisibility = () => {
+      setPasswordVisibility(!isPasswordVisible);
+    };
+
   return (
 <>
       {/* Wrapping form inside formik tag and passing our schema to validationSchema prop */}
@@ -98,8 +103,9 @@ const LoginUser = () => {
                   {errors.username && touched.username && errors.username}
                 </p>
                  {/* Our input html with passing formik parameters like handleChange, values, handleBlur to input properties */}
+                 <div className="input-with-icon">
                 <input
-                  type="password"
+                  type={isPasswordVisible ? 'text' : 'password'}
                   name="password"
                   onChange={handleChange}
                   onBlur={handleBlur}
@@ -107,6 +113,13 @@ const LoginUser = () => {
                   placeholder="🔑 Enter password"
                   className="form-control"
                 />
+                 <span
+                    className="toggle-password"
+                    onClick={togglePasswordVisibility}
+                  >
+                    {isPasswordVisible ? 'Hide 🌝' : 'Show 🌚'}
+                  </span>
+                  </div>
                  {/* If validation is not passed show errors */}
                 <p className="error">
                   {errors.password && touched.password && errors.password}

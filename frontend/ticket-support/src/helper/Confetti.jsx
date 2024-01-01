@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import '../components/basicstyle/form.css';
+import '../style/form.css';
 
 const Confetti = () => {
     useEffect(() => {

@@ -135,6 +135,12 @@
   padding: 6px;
 }
 
+.notFoundPageWarning {
+  color: white;
+  font-weight: bold;
+  font-size: 18px;
+  font-family: 'Comfortaa', cursive;
+}
 
 @media screen and (max-width: 768px) {
   .sendform {
@@ -156,6 +162,6 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    height: calc(100vh - 140px);
+    margin-top: 100px;
   }
 }

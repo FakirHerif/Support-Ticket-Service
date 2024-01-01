@@ -4,7 +4,7 @@ import * as Yup from 'yup';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from './AuthContext';
+import { useAuth } from '../context/AuthContext';
 import ReCAPTCHA from 'react-google-recaptcha';
 
 const Register = () => {

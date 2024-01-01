@@ -39,7 +39,7 @@ const Home = () => {
           </div>
         </div>
         <div className="ratings-container">
-          <h2 className="text-center mb-4">See why SendForm is trusted by 20+ million users</h2>
+          <h2 className="text-center mb-4">See why SendformS is trusted by 20+ million users</h2>
           <div className="images-container">
             <img src="https://cdn.jotfor.ms/p/homepage/homepage_2021/assets/img-min/rating/g2-crowd.svg" alt="" />
             <img src="https://cdn.jotfor.ms/p/homepage/homepage_2021/assets/img-min/rating/software-advice.svg" alt="" />

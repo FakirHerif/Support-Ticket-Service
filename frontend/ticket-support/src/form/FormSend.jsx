@@ -3,10 +3,10 @@ import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { useAuth } from './AuthContext';
+import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { useFormContext } from './FormContext';
-import '../components/basicstyle/form.css';
+import { useFormContext } from '../context/FormContext';
+import '../style/form.css';
 import ReCAPTCHA from 'react-google-recaptcha';
 
 const FormSend = () => {

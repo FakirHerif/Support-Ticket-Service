@@ -1,7 +1,7 @@
 import React from 'react'
-import { useFormContext } from './FormContext';
-import '../components/basicstyle/form.css';
-import Confetti from './Confetti';
+import { useFormContext } from '../context/FormContext';
+import '../style/form.css';
+import Confetti from '../helper/Confetti';
 import { useNavigate } from 'react-router-dom';
 
 const FormSuccess = () => {

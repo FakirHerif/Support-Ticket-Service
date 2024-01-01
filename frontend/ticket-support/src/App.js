@@ -1,22 +1,22 @@
-import Home from "./components/Home";
-import LoginUser from "./components/LoginUser";
+import Home from "./layouts/Home";
+import LoginUser from "./user/LoginUser";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import Register from "./components/Register";
-import Header from "./components/Header";
-import LoginAdmin from "./components/LoginAdmin";
-import { AuthProvider } from './components/AuthContext';
-import FormSend from "./components/FormSend";
-import { FormProvider } from './components/FormContext';
-import FormSuccess from "./components/FormSuccess";
-import FormSearch from "./components/FormSearch";
-import FormDetail from "./components/FormDetail";
-import AdminFormlist from "./components/AdminFormlist";
-import AdminFormDetail from "./components/AdminFormDetail";
-import PrivateRoute from './components/PrivateRoute';
-import NotFound from "./components/NotFound";
-import UserFormlist from "./components/UserFormlist";
+import Register from "./layouts/Register";
+import Header from "./layouts/Header";
+import LoginAdmin from "./admin/LoginAdmin";
+import { AuthProvider } from './context/AuthContext';
+import FormSend from "./form/FormSend";
+import { FormProvider } from './context/FormContext';
+import FormSuccess from "./form/FormSuccess";
+import FormSearch from "./form/FormSearch";
+import FormDetail from "./form/FormDetail";
+import AdminFormlist from "./admin/AdminFormlist";
+import AdminFormDetail from "./admin/AdminFormDetail";
+import PrivateRoute from './route/PrivateRoute';
+import NotFound from "./layouts/NotFound";
+import UserFormlist from "./user/UserFormlist";
 
 
 function App() {

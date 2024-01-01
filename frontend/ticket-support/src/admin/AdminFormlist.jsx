@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Card, Container, Row, Col, Button, Dropdown } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from './AuthContext';
+import { useAuth } from '../context/AuthContext';
 
 const AdminFormlist = () => {
   const [informations, setInformations] = useState([]);

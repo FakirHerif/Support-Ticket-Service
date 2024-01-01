@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Form, Button } from 'react-bootstrap';
-import { useAuth } from './AuthContext';
-import '../components/basicstyle/form.css';
-import '../components/basicstyle/comments.css';
-import NotFound from './NotFound';
+import { useAuth } from '../context/AuthContext';
+import '../style/form.css';
+import '../style/comments.css';
+import NotFound from '../layouts/NotFound';
 
 const FormDetail = () => {
 

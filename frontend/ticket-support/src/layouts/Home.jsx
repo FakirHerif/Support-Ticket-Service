@@ -5,9 +5,9 @@ const Home = () => {
   return (
     <div className="container mt-3 homecomp">
       <div className="row">
-      <div class="animation">
+      <div className="animation">
     <h2>Coding is
-    <div class="scroller">
+    <div className="scroller">
       <span>
         Cool<br/>
         Art<br/>

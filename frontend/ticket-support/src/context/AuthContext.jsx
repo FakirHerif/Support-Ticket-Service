@@ -28,7 +28,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const instance = axios.create({
-    baseURL: 'http://localhost:8080/api',
+    baseURL: 'https://sendform.fly.dev/api',
     headers: {
       'Content-Type': 'application/json',
     },

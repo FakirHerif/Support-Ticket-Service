@@ -5,8 +5,8 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const Header = () => {
-    const { user, handleLogout } = useAuth();
-    const isAdmin = user === 'admin';
+    const { user, handleLogout, role } = useAuth();
+    const isAdmin = role === 'admin';
 
     return (
         <nav className="navbar navbar-expand-lg navbar-light bg-light" style={{fontSize: '18px', fontWeight:'bold'}}>

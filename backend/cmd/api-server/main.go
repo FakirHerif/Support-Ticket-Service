@@ -4,6 +4,7 @@ import (
 	"log"
 	"mime/multipart"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -55,7 +56,17 @@ func main() {
 
 	}
 
-	filePath := "../../database/database.db"
+	var isDocker = os.Getenv("IS_DOCKER")
+	var filePath string
+
+	if isDocker == "true" {
+		// Docker içinde çalışılıyorsa
+		filePath = "./database/database.db"
+	} else {
+		// Lokal ortamda çalışılıyorsa
+		filePath = "../../database/database.db"
+	}
+
 	err := database.ConnectDatabase(filePath)
 	checkErr(err)
 

@@ -74,7 +74,6 @@ This will start the server
 - Admins can view the complete contents of all forms, including personal information. They have full authorization to edit all form details and comments, delete forms, and comments.
 - The login pages for admins and regular users differ. If an admin tries to log in from the regular user login panel, they receive a warning message and are automatically redirected to the admin login panel.
 - If the URL being accessed does not exist, a 404 not found error is encountered.
-Feel free to modify or add more detailed explanations if required, based on the specifics of your project or any additional context you'd like to provide.
 
 ## Routes/Paths
 

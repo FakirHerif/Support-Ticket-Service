@@ -204,11 +204,12 @@ func addResponse(c *gin.Context) {
 		return
 	}
 
-	if err := repository.AddResponse(json); err != nil {
+	responseID, err := repository.AddResponse(json)
+	if err != nil {
 		c.JSON(500, gin.H{"error": "Failed to add response", "details": err.Error()})
 		return
 	}
-	c.JSON(200, gin.H{"message": "SUCCESS: Response Added"})
+	c.JSON(200, gin.H{"message": "SUCCESS: Response Added", "response_id": responseID})
 }
 
 func updateResponseByID(c *gin.Context) {

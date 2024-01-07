@@ -30,14 +30,14 @@ func GetResponseByID(id string) (model.Response, error) {
 	return response, nil
 }
 
-func AddResponse(newResponse model.Response) error {
+func AddResponse(newResponse model.Response) (int, error) {
 	newResponse.ReplyDate = time.Now().Format("02.01.2006 15:04:05")
 
 	result := database.DB.Omit("id").Create(&newResponse)
 	if result.Error != nil {
-		return result.Error
+		return 0, result.Error
 	}
-	return nil
+	return newResponse.Id, nil
 }
 
 func UpdateResponseByID(byResponse model.Response, id int) error {

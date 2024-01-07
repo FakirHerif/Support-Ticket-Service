@@ -19,6 +19,7 @@ const AdminFormDetail = () => {
   const { axios, user } = useAuth();
   const [fileUrl, setFileUrl] = useState('');
   const [showNotFound, setShowNotFound] = useState(false);
+  const [lastResponseID, setLastResponseID] = useState(null);
 
   useEffect(() => {
     axios.get(`/informations/referenceID/${referenceID}`)
@@ -124,6 +125,8 @@ const AdminFormDetail = () => {
     })
       .then((response) => {
         console.log('Response sent:', response.data);
+        console.log('response id:', response.data.response_id)
+        setLastResponseID(response.data.response_id) // Response ID
         toast.success('Comment sent successfully!', { autoClose: 3000 });
         setInfoDetails((prevDetails) => ({
           ...prevDetails,
@@ -169,24 +172,31 @@ const handleDownload = () => {
 };
 
 const handleDeleteResponse = (responseID) => {
+  console.log(lastResponseID)
   const confirmDelete = window.confirm('Are you sure you want to delete this comment?');
-  console.log("Seçilen yorumun ID'si:", responseID); 
+
   if (confirmDelete) {
     axios.delete(`/response/${responseID}`)
       .then((response) => {
-        console.log(response)
-        const updatedDetails = {
-          ...infoDetails,
-          response: infoDetails.response.filter((res) => res.id !== responseID)
-        };
-        setInfoDetails(updatedDetails);
+        console.log(response);
         toast.success('Comment deleted successfully!', { autoClose: 3000 });
+        const updatedComments = infoDetails.response.filter((comment) => comment.id !== responseID);
+        setInfoDetails((prevState) => ({ ...prevState, response: updatedComments }));
       })
       .catch((error) => {
-        console.error('Error deleting comment:', error);
-        toast.error('Failed to delete comment!', { autoClose: 3000 });
+        axios.delete(`/response/${lastResponseID}`)
+          .then((response) => {
+            console.log(response);
+            toast.success('Comment deleted successfully!', { autoClose: 3000 });
+            const updatedComments = infoDetails.response.filter((comment) => comment.id !== responseID);
+            setInfoDetails((prevState) => ({ ...prevState, response: updatedComments }));
+          })
+          .catch((error) => {
+            console.error('Error deleting comment:', error);
+            toast.error('Failed to delete comment!', { autoClose: 3000 });
+          });
       });
-  }
+    }
 };
 
   return (
